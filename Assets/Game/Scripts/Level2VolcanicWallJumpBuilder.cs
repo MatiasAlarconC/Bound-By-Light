@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [ExecuteAlways]
 public class Level2VolcanicWallJumpBuilder : MonoBehaviour
@@ -75,21 +79,25 @@ public class Level2VolcanicWallJumpBuilder : MonoBehaviour
     {
         whiteCircle = CreateCircleSprite();
         whiteSquare = CreateSquareSprite();
-        deepSeaBg = SpriteFromResource("Level2/BG_Level2_DeepSea_Base", 100f);
-        volcanicBg = SpriteFromResource("Level2/BG_Level2_Volcanic_Midground", 100f);
-        nereoSprite = SpriteFromResource("Level2/Nereo_Babosa", 220f);
-        spiderSprite = SpriteFromResource("Level2/Elias_AranaMar", 250f);
+        deepSeaBg = SpriteFromResource("Assets/Game/Sprites/Backgrounds/Level 2/BG_Level2_DeepSea_Base.png", 100f);
+        volcanicBg = SpriteFromResource("Assets/Game/Sprites/Backgrounds/Level 2/BG_Level2_Volcanic_Midground.png", 100f);
+        nereoSprite = SpriteFromResource("Assets/Game/Sprites/Player/Nereo_Babosa.png", 220f);
+        spiderSprite = SpriteFromResource("Assets/Game/Sprites/Player/Elias_AranaMar.png", 250f);
 
         officialLevel2Layers = new Sprite[7];
         for (int i = 0; i < officialLevel2Layers.Length; i++)
         {
-            officialLevel2Layers[i] = SpriteFromResource("Level2Official/Background_Level2-" + (i + 1), 100f);
+            officialLevel2Layers[i] = SpriteFromResource("Assets/Game/Sprites/Backgrounds/Level 2/Background_Level2-" + (i + 1) + ".png", 100f);
         }
     }
 
     Sprite SpriteFromResource(string path, float pixelsPerUnit)
     {
-        Texture2D texture = Resources.Load<Texture2D>(path);
+#if UNITY_EDITOR
+        Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+#else
+        Texture2D texture = null;
+#endif
         if (texture == null) return whiteSquare;
 
         return Sprite.Create(
@@ -421,7 +429,7 @@ public class Level2PlayerController : MonoBehaviour
         ResolveReferences();
         if (rb == null || spriteRenderer == null || spider == null || lightMeter == null) return;
 
-        if (Time.timeScale == 0f && Input.GetKeyDown(KeyCode.R))
+        if (Time.timeScale == 0f && Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -451,8 +459,8 @@ public class Level2PlayerController : MonoBehaviour
     void HandleMovement()
     {
         float horizontal = 0f;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) horizontal -= 1f;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) horizontal += 1f;
+        if (Keyboard.current != null && (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)) horizontal -= 1f;
+        if (Keyboard.current != null && (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)) horizontal += 1f;
 
         rb.linearVelocity = new Vector2(horizontal * moveSpeed, rb.linearVelocity.y);
 
@@ -462,12 +470,12 @@ public class Level2PlayerController : MonoBehaviour
 
     void HandleAbilities()
     {
-        if (Input.GetKeyDown(KeyCode.Z) && lightMeter.UseLight(8f))
+        if (Keyboard.current != null && Keyboard.current.zKey.wasPressedThisFrame && lightMeter.UseLight(8f))
         {
             spider.ActivateSeaSpider();
         }
 
-        bool wantsJump = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow);
+        bool wantsJump = Keyboard.current != null && (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.upArrowKey.wasPressedThisFrame);
 
         if (wantsJump && spider.IsActive && touchingWall)
         {
@@ -481,7 +489,7 @@ public class Level2PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
-        bool levitating = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool levitating = Keyboard.current != null && (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed);
         if (levitating && lightMeter.UseLight(12f * Time.deltaTime))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, levitationSpeed);
