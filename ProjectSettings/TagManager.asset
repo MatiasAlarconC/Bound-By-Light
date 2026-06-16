@@ -2,8 +2,13 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - PilarColumpio
+  - Pulpo
+  - Babosa
+  - Checkpoint
+  - DeadZone
   layers:
   - Default
   - TransparentFX
@@ -11,8 +16,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Babosa
+  - Pulpo
   - 
   - 
   - 
@@ -41,18 +46,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
-    uniqueID: 2509579925
+  - name: BackGround
+    uniqueID: 289966077
     locked: 0
-  - name: Far Background
-    uniqueID: 678604241
-    locked: 0
-  - name: Midground
-    uniqueID: 387902805
-    locked: 0
-  - name: Environment
-    uniqueID: 1174622427
+  - name: Decorations
+    uniqueID: 1959646119
     locked: 0
   - name: Platforms
-    uniqueID: 1209577367
+    uniqueID: 537019001
     locked: 0
+  - name: Player
+    uniqueID: 1163427565
+    locked: 0
+  m_RenderingLayers:
+  - Default
