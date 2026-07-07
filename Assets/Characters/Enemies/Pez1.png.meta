@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d3e0c9d96d82bc640ad4776967c7926a
+guid: e253476ccfa3b774eacf233b579da55d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3404792432906320772
-    second: Bakcground_Level1-5_0
+      213: 6792535648834729837
+    second: Pez1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bakcground_Level1-5_0
+      name: Pez1_0
       rect:
         serializedVersion: 2
-        x: 287
-        y: 0
-        width: 1697
-        height: 398
+        x: 80
+        y: 72
+        width: 1406
+        height: 1068
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c744ea6525fbfb0d0800000000000000
-      internalID: -3404792432906320772
+      spriteID: d67b8f82f2fe34e50800000000000000
+      internalID: 6792535648834729837
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Bakcground_Level1-5_0: -3404792432906320772
+      Pez1_0: 6792535648834729837
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

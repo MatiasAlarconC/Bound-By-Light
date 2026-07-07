@@ -1,40 +1,10 @@
 fileFormatVersion: 2
-guid: c78cba23eafadf140b00f4e18fed56af
+guid: 59e87a3acfc07e2428361a8c609c6fb6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5845708114825247295
-    second: Bakcground_Level1-2_0
-  - first:
-      213: -5533656983859771856
-    second: Bakcground_Level1-2_1
-  - first:
-      213: 8730100556799542956
-    second: Bakcground_Level1-2_2
-  - first:
-      213: -3667963804800517244
-    second: Bakcground_Level1-2_3
-  - first:
-      213: 7191930301186533969
-    second: Bakcground_Level1-2_4
-  - first:
-      213: 6620867052635555807
-    second: Bakcground_Level1-2_5
-  - first:
-      213: 9027688424323077116
-    second: Bakcground_Level1-2_6
-  - first:
-      213: 5265545740826071539
-    second: Bakcground_Level1-2_7
-  - first:
-      213: -733951483155068567
-    second: Bakcground_Level1-2_8
-  - first:
-      213: 6430410858683021448
-    second: Bakcground_Level1-2_9
-  - first:
-      213: -4745122785955221099
-    second: Bakcground_Level1-2_10
+      213: -8152803453620914795
+    second: Background_Level3-1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -130,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bakcground_Level1-2_0
+      name: Background_Level3-1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -145,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f3af6ccfe80202150800000000000000
-      internalID: 5845708114825247295
+      spriteID: 595f85f447c6bde80800000000000000
+      internalID: -8152803453620914795
       vertices: []
       indices: 
       edges: []
@@ -155,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: e239b15afa9876a48aef4437c7464052
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -165,17 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Bakcground_Level1-2_0: 5845708114825247295
-      Bakcground_Level1-2_1: -5533656983859771856
-      Bakcground_Level1-2_10: -4745122785955221099
-      Bakcground_Level1-2_2: 8730100556799542956
-      Bakcground_Level1-2_3: -3667963804800517244
-      Bakcground_Level1-2_4: 7191930301186533969
-      Bakcground_Level1-2_5: 6620867052635555807
-      Bakcground_Level1-2_6: 9027688424323077116
-      Bakcground_Level1-2_7: 5265545740826071539
-      Bakcground_Level1-2_8: -733951483155068567
-      Bakcground_Level1-2_9: 6430410858683021448
+      Background_Level3-1_0: -8152803453620914795
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
