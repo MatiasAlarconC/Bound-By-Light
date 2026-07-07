@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+
+    <Style src="MainMenu.uss" />
+
+    <ui:VisualElement name="root" class="root">
+
+        <ui:VisualElement name="background" class="background" picking-mode="Ignore" />
+        <ui:VisualElement name="slug" class="slug-creature" picking-mode="Ignore" />
+        <ui:VisualElement name="angel" class="angel-creature" picking-mode="Ignore" />
+
+        <ui:VisualElement name="menu-content" class="menu-content">
+
+            <ui:VisualElement name="title-img" class="title-img" picking-mode="Ignore" />
+
+            <ui:VisualElement name="title-text-fallback" class="title-text-fallback">
+                <ui:Label text="Bound" class="title-bound" />
+                <ui:Label text="by light" class="title-bylight" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="button-stack" class="button-stack">
+                <ui:Button text="jugar ahora"   name="btn-play"     class="menu-btn btn-primary" />
+                <ui:Button text="continuar"      name="btn-continue" class="menu-btn btn-secondary" />
+                <ui:Button text="configuración"  name="btn-settings" class="menu-btn btn-tertiary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Label text="© 2026 frogits · todos los derechos reservados"
+                  name="credits" class="credits" picking-mode="Ignore" />
+
+        <ui:VisualElement name="settings-overlay" class="settings-overlay hidden">
+            <ui:VisualElement name="settings-backdrop" class="settings-backdrop" />
+            <ui:VisualElement name="settings-card" class="settings-card">
+
+                <ui:Label text="Configuración" class="settings-title" />
+
+                <ui:VisualElement class="slider-row">
+                    <ui:VisualElement class="slider-head">
+                        <ui:Label text="volumen master" class="slider-label" />
+                        <ui:Label text="80%" name="val-master" class="slider-value" />
+                    </ui:VisualElement>
+                    <ui:Slider name="slider-master" low-value="0" high-value="100" value="80" class="bbl-slider" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="slider-row">
+                    <ui:VisualElement class="slider-head">
+                        <ui:Label text="música" class="slider-label" />
+                        <ui:Label text="70%" name="val-music" class="slider-value" />
+                    </ui:VisualElement>
+                    <ui:Slider name="slider-music" low-value="0" high-value="100" value="70" class="bbl-slider" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="slider-row">
+                    <ui:VisualElement class="slider-head">
+                        <ui:Label text="sfx" class="slider-label" />
+                        <ui:Label text="60%" name="val-sfx" class="slider-value" />
+                    </ui:VisualElement>
+                    <ui:Slider name="slider-sfx" low-value="0" high-value="100" value="60" class="bbl-slider" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="divider" />
+
+                <ui:VisualElement class="lang-row">
+                    <ui:Label text="idioma / language" class="slider-label lang-label" />
+                    <ui:VisualElement class="lang-chips">
+                        <ui:Button text="español" name="lang-es" class="lang-chip lang-active" />
+                        <ui:Button text="english" name="lang-en" class="lang-chip" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="fullscreen-row">
+                    <ui:Label text="pantalla completa" class="slider-label" />
+                    <ui:Toggle name="toggle-fullscreen" class="bbl-toggle" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="divider" />
+
+                <ui:VisualElement class="close-row">
+                    <ui:Button text="cerrar" name="btn-close-settings" class="menu-btn btn-tertiary" />
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

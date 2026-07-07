@@ -1,0 +1,323 @@
+/* BOUND BY LIGHT — MainMenu.uss */
+
+.root {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    background-color: #080e16;
+    align-items: center;
+    justify-content: center;
+}
+
+.background {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: #101c2c;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.slug-creature {
+    position: absolute;
+    left: 1%;
+    bottom: 3%;
+    width: 420px;
+    height: 260px;
+    background-image: url("project://database/Assets/Game/UI/Art/slug.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.angel-creature {
+    position: absolute;
+    right: 2%;
+    bottom: 3%;
+    width: 300px;
+    height: 420px;
+    background-image: url("project://database/Assets/Game/UI/Art/angel.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.menu-content {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 50px;
+}
+
+.title-img {
+    width: 540px;
+    height: 230px;
+    margin-bottom: 40px;
+    background-image: url("project://database/Assets/Game/UI/Art/title_glow.png");
+    -unity-background-scale-mode: scale-to-fit;
+    display: none;
+}
+
+.title-text-fallback {
+    align-items: center;
+    margin-bottom: 44px;
+    rotate: -2.5deg;
+}
+
+.title-bound {
+    -unity-font: url("project://database/Assets/Game/Fonts/Caveat-Bold%20FONT.ttf");
+    font-size: 104px;
+    color: #dce8f5;
+    -unity-text-align: middle-center;
+}
+
+.title-bylight {
+    -unity-font: url("project://database/Assets/Game/Fonts/Caveat-Bold%20FONT.ttf");
+    font-size: 60px;
+    color: #8aa0b8;
+    letter-spacing: 14px;
+    margin-top: -14px;
+    -unity-text-align: middle-center;
+}
+
+.button-stack {
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-btn {
+    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    -unity-text-align: middle-center;
+    letter-spacing: 3px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    border-radius: 50px;
+    transition-property: background-color, color, border-color, scale, translate;
+    transition-duration: 0.38s;
+    transition-timing-function: ease;
+    cursor: hand;
+}
+
+.btn-primary {
+    font-size: 16px;
+    width: 272px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: rgba(232, 160, 48, 0.10);
+    color: #e8a030;
+    border-width: 1.5px;
+    border-color: rgba(232, 160, 48, 0.36);
+}
+
+.btn-primary:hover {
+    background-color: rgba(232, 160, 48, 0.22);
+    color: #f5c060;
+    border-color: rgba(232, 160, 48, 0.80);
+    scale: 1.045 1.045;
+    translate: 0 -2px;
+}
+
+.btn-primary:active {
+    scale: 0.955 0.955;
+    background-color: rgba(232, 160, 48, 0.30);
+}
+
+.btn-secondary {
+    font-size: 13px;
+    width: 228px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: rgba(42, 53, 68, 0.12);
+    color: #6a7a8a;
+    border-width: 1px;
+    border-color: rgba(74, 90, 110, 0.26);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(74, 90, 110, 0.20);
+    color: #b0c0d2;
+    border-color: rgba(106, 122, 142, 0.48);
+    scale: 1.045 1.045;
+    translate: 0 -2px;
+}
+
+.btn-tertiary {
+    font-size: 11px;
+    width: 184px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #5a6a7a;
+    border-width: 0;
+}
+
+.btn-tertiary:hover {
+    color: #9ab0c8;
+}
+
+.credits {
+    position: absolute;
+    bottom: 18px;
+    left: 0; right: 0;
+    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: rgba(74, 90, 110, 0.48);
+    -unity-text-align: middle-center;
+}
+
+.settings-overlay {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    align-items: center;
+    justify-content: center;
+    transition-property: opacity;
+    transition-duration: 0.38s;
+}
+
+.hidden { display: none; }
+
+.settings-backdrop {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: rgba(5, 10, 18, 0.82);
+}
+
+.settings-card {
+    width: 520px;
+    background-color: rgba(10, 18, 30, 0.96);
+    border-width: 1px;
+    border-color: rgba(74, 90, 110, 0.22);
+    border-radius: 26px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 44px;
+    padding-bottom: 44px;
+}
+
+.settings-title {
+    -unity-font: url("project://database/Assets/Game/Fonts/Caveat-Bold%20FONT.ttf");
+    font-size: 42px;
+    color: #c8d8e8;
+    -unity-text-align: middle-center;
+    margin-bottom: 34px;
+}
+
+.slider-row { margin-bottom: 26px; }
+
+.slider-head {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.slider-label {
+    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #5a6a7a;
+}
+
+.slider-value {
+    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    font-size: 11px;
+    color: #4a5a6e;
+}
+
+.bbl-slider { height: 26px; }
+
+.bbl-slider .unity-base-slider__tracker {
+    background-color: rgba(74, 90, 110, 0.28);
+    border-radius: 2px;
+    border-width: 0;
+    height: 3px;
+    margin-top: 11px;
+}
+
+.bbl-slider .unity-base-slider__dragger {
+    background-color: #6a7a8e;
+    border-radius: 50%;
+    width: 17px;
+    height: 17px;
+    border-width: 2px;
+    border-color: rgba(180, 210, 255, 0.3);
+    margin-top: -8px;
+}
+
+.bbl-slider .unity-base-slider__dragger:hover {
+    background-color: #e8a030;
+    scale: 1.3 1.3;
+}
+
+.divider {
+    height: 1px;
+    background-color: rgba(74, 90, 110, 0.17);
+    margin-top: 22px;
+    margin-bottom: 22px;
+}
+
+.lang-row { margin-bottom: 26px; }
+.lang-label { margin-bottom: 13px; }
+.lang-chips { flex-direction: row; }
+
+.lang-chip {
+    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #506070;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 1px;
+    border-color: rgba(74, 90, 110, 0.24);
+    border-radius: 22px;
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-right: 10px;
+    transition-property: background-color, color, border-color;
+    transition-duration: 0.3s;
+}
+
+.lang-chip:hover {
+    background-color: rgba(74, 90, 110, 0.14);
+    color: #c8d8e8;
+}
+
+.lang-active {
+    background-color: rgba(232, 160, 48, 0.15);
+    border-color: rgba(232, 160, 48, 0.60);
+    color: #e8a030;
+}
+
+.fullscreen-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.bbl-toggle {
+    width: 44px;
+    height: 24px;
+}
+
+.bbl-toggle .unity-toggle__input {
+    flex-direction: row;
+    align-items: center;
+}
+
+.bbl-toggle .unity-toggle__checkmark {
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background-color: rgba(74, 90, 110, 0.40);
+    border-width: 1px;
+    border-color: rgba(74, 90, 110, 0.40);
+}
+
+.bbl-toggle:checked .unity-toggle__checkmark {
+    background-color: rgba(232, 160, 48, 0.70);
+    border-color: rgba(232, 160, 48, 0.80);
+}
+
+.close-row {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+}

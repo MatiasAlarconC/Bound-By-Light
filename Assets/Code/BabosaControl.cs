@@ -6,7 +6,12 @@ public class BabosaControl : MonoBehaviour
     [SerializeField] private float velocidadSuelo = 8f;
     [SerializeField] private float fuerzaFisicaBalanceo = 180f; 
     [SerializeField] private float fuerzaSaltoX = 5f;          
-    [SerializeField] private float fuerzaSaltoY = 7f;           
+    [SerializeField] private float fuerzaSaltoY = 7f;   
+
+    [Header("Efectos de Sonido")]
+    [Tooltip("Arrastra aquí los diferentes clips de sonido para cuando la babosa sale impulsada del pulpo")]
+    [SerializeField] private AudioClip[] sonidosSaltoBabosa;
+    private AudioSource miLectorDeAudio;        
 
     private Rigidbody2D rbBabosa;
     private HingeJoint2D agarreActual; 
@@ -19,6 +24,9 @@ public class BabosaControl : MonoBehaviour
     // Renderizador de la imagen (Sprite)
     private SpriteRenderer miSprite;
 
+    // COMPONENTE NUEVO: Control de animaciones
+    private Animator miAnimator;
+
     void Start()
     {
         rbBabosa = GetComponent<Rigidbody2D>();
@@ -27,8 +35,15 @@ public class BabosaControl : MonoBehaviour
             rbBabosa.mass = 0.5f;
         }
 
-        // Buscamos automáticamente el componente visual al arrancar
         miSprite = GetComponent<SpriteRenderer>();
+        miAnimator = GetComponent<Animator>();
+
+        // Inicializamos el componente de audio de la Babosa
+        miLectorDeAudio = GetComponent<AudioSource>();
+        if (miLectorDeAudio == null)
+        {
+            miLectorDeAudio = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     public void SetControlActivo(bool activo)
@@ -54,7 +69,8 @@ public class BabosaControl : MonoBehaviour
         {
             if (rbBabosa != null)
             {
-                rbBabosa.AddForce(new Vector2(inputH * fuerzaFisicaBalanceo, 0f), ForceMode2D.Force);
+                // Multiplicamos por Time.fixedDeltaTime para que la fuerza sea igual en cualquier PC o navegador
+                rbBabosa.AddForce(new Vector2(inputH * fuerzaFisicaBalanceo * Time.fixedDeltaTime * 60f, 0f), ForceMode2D.Force);
             }
 
             if (Input.GetButtonDown("Jump"))
@@ -104,6 +120,12 @@ public class BabosaControl : MonoBehaviour
                     limitesSemicirculo.max = 90f;  
                     agarreActual.limits = limitesSemicirculo;
 
+                    // NUEVO: Activamos la animación en el Animator usando el parámetro booleano
+                    if (miAnimator != null)
+                    {
+                        miAnimator.SetBool("estaEnganchada", true);
+                    }
+
                     rbBabosa.linearVelocity = new Vector2(rbBabosa.linearVelocity.x * 1.2f, 4f);
                     Debug.Log("Enganchado dinámicamente al pulpo: " + pulpoDetectado.name);
 
@@ -126,6 +148,11 @@ public class BabosaControl : MonoBehaviour
         colgadaActualmente = false;
         cooldownEnganche = Time.time + 0.5f; 
 
+        if (miAnimator != null)
+        {
+            miAnimator.SetBool("estaEnganchada", false);
+        }
+
         if (agarreActual != null)
         {
             Destroy(agarreActual);
@@ -134,7 +161,17 @@ public class BabosaControl : MonoBehaviour
         pulpoCuerdaActual = null; 
 
         float direccionInercia = rbBabosa.linearVelocity.x >= 0 ? 1f : -1f;
-        rbBabosa.linearVelocity = new Vector2(rbBabosa.linearVelocity.x * 0.7f, 0f); 
+        rbBabosa.linearVelocity = new Vector2(rbBabosa.linearVelocity.x * 0.7f, 0f);
         rbBabosa.AddForce(new Vector2(direccionInercia * fuerzaSaltoX, fuerzaSaltoY), ForceMode2D.Impulse);
+
+        // ====================================================================
+        // NUEVO: REPRODUCIR SONIDO ALEATORIO AL DESENGANCHARSE (SALTO)
+        // ====================================================================
+        if (miLectorDeAudio != null && sonidosSaltoBabosa != null && sonidosSaltoBabosa.Length > 0)
+        {
+            int indiceAleatorio = Random.Range(0, sonidosSaltoBabosa.Length);
+            miLectorDeAudio.PlayOneShot(sonidosSaltoBabosa[indiceAleatorio]);
+            Debug.Log("<color=green>¡Babosa: Sonido de impulso/desenganche reproducido!</color>");
+        }
     }
 }

@@ -1,5 +1,5 @@
 using UnityEngine;
-using Unity.Cinemachine; // Recuerda cambiar a 'using Cinemachine;' si usas versión antigua de Unity
+using Unity.Cinemachine; 
 
 public class GameManager : MonoBehaviour
 {
@@ -17,22 +17,28 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CinemachineBrain cerebroCinemachine; 
 
     [Header("Efectos de Sonido (SFX)")]
-    [Tooltip("Arrastra aquí el sonido de muerte de la Babosa")]
-    [SerializeField] private AudioClip sonidoMuerteBabosa;
+    [Tooltip("Arrastra aquí todos los sonidos de muerte de la Babosa")]
+    [SerializeField] private AudioClip[] sonidosMuerteBabosa; // Añadido []
 
-    [Tooltip("Arrastra aquí el sonido de muerte del Pulpo")]
-    [SerializeField] private AudioClip sonidoMuertePulpo;
+    [Tooltip("Arrastra aquí todos los sonidos de muerte del Pulpo")]
+    [SerializeField] private AudioClip[] sonidosMuertePulpo; // Añadido []
 
     [Tooltip("Arrastra aquí el sonido de enganche entre la Babosa y el Pulpo")]
     [SerializeField] private AudioClip sonidoEnganchePersonajes;
 
-    // Este componente se encargará de reproducir todos los clips del GameManager
+    [Tooltip("Arrastra aquí el sonido que sonará al activar un Checkpoint")]
+    [SerializeField] private AudioClip sonidoCheckpoint;
+
     private AudioSource miLectorDeAudio;
+
+    [Header("UI de Teclas de Personajes")]
+    [SerializeField] private GameObject cartelTeclasBabosa;
+    [SerializeField] private GameObject cartelTeclasPulpo;
 
     [Header("Sistema de Checkpoints")]
     private Vector3 puntoDeReaparicion;
-
     private bool controlandoAlPulpo = false;
+    private float tiempoSiguienteMuerte = 0f;
 
     void Start()
     {
@@ -44,12 +50,13 @@ public class GameManager : MonoBehaviour
             puntoDeReaparicion = hermanoMenorBabosa.transform.position;
         }
 
-        // Agregamos u obtenemos el componente de audio al iniciar
         miLectorDeAudio = GetComponent<AudioSource>();
         if (miLectorDeAudio == null)
         {
             miLectorDeAudio = gameObject.AddComponent<AudioSource>();
         }
+
+        ActivarCartelUI(false); 
     }
 
     void Update()
@@ -82,6 +89,8 @@ public class GameManager : MonoBehaviour
         {
             hudUI.ActualizarIndicador(controlandoAlPulpo);
         }
+
+        ActivarCartelUI(controlandoAlPulpo);
     }
 
     void ActualizarCuartoActual()
@@ -138,40 +147,79 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ====================================================================
-    // NUEVO: FUNCIÓN PÚBLICA PARA REPRODUCIR EL ENGANCHE
-    // ====================================================================
     public void ReproducirSonidoEnganche()
     {
         if (miLectorDeAudio != null && sonidoEnganchePersonajes != null)
         {
             miLectorDeAudio.PlayOneShot(sonidoEnganchePersonajes);
-            Debug.Log("<color=magenta>¡SFX: Sonido de enganche reproducido!</color>");
         }
     }
 
-    // --- FUNCIONES DE CHECKPOINTS Y MUERTE ---
-    public void GuardarNuevoCheckpoint(Vector3 nuevaPosicion)
+    // ====================================================================
+    // FUNCIÓN DE CHECKPOINT SEGURA CON ANIMACIÓN DIRECTA
+    // ====================================================================
+    public void GuardarNuevoCheckpoint(Vector3 nuevaPosicion, Animator animatorDelCheckpoint = null)
     {
-        puntoDeReaparicion = nuevaPosicion;
+        // 1. Si se controla al pulpo, se rechaza inmediatamente antes de hacer nada mas
+        if (controlandoAlPulpo)
+        {
+            Debug.Log("<color=orange>¡Checkpoint ignorado! El Pulpo no puede activarlo.</color>");
+            return;
+        }
+
+        // 2. Si es la babosa, guardamos y reproducimos audio/animación
+        if (puntoDeReaparicion != nuevaPosicion)
+        {
+            puntoDeReaparicion = nuevaPosicion;
+
+            // Reproducir sonido de guardado
+            if (miLectorDeAudio != null && sonidoCheckpoint != null)
+            {
+                miLectorDeAudio.PlayOneShot(sonidoCheckpoint);
+                Debug.Log("<color=yellow>¡Checkpoint guardado y SFX reproducido!</color>");
+            }
+
+            // Encendemos el parámetro "activado" directamente si nos mandaron un animator
+            if (animatorDelCheckpoint != null)
+            {
+                animatorDelCheckpoint.SetBool("activado", true);
+                Debug.Log("<color=green>¡Burbuja activada con éxito!</color>");
+            }
+        }
     }
 
     public void MuerteYRespawnCooperativo()
     {
-        Debug.Log("<color=red>¡Muerte detectada! Reproduciendo sonido y reapareciendo...</color>");
+        // 1. Candado de tiempo: Si intentan morir dos veces seguidas en menos de 0.4 segundos, ignoramos la segunda
+        if (Time.time < tiempoSiguienteMuerte)
+        {
+            return;
+        }
+
+        // Activamos el candado para los próximos 0.4 segundos
+        tiempoSiguienteMuerte = Time.time + 0.4f;
+
+        Debug.Log("<color=red>¡Muerte detectada! Reproduciendo sonido aleatorio y reapareciendo...</color>");
 
         if (miLectorDeAudio != null)
         {
-            if (controlandoAlPulpo && sonidoMuertePulpo != null)
+            // SI MUERE EL PULPO:
+            if (controlandoAlPulpo && sonidosMuertePulpo != null && sonidosMuertePulpo.Length > 0)
             {
-                miLectorDeAudio.PlayOneShot(sonidoMuertePulpo);
+                // Elegimos un índice al azar de la lista del pulpo
+                int indiceAleatorio = Random.Range(0, sonidosMuertePulpo.Length);
+                miLectorDeAudio.PlayOneShot(sonidosMuertePulpo[indiceAleatorio]);
             }
-            else if (!controlandoAlPulpo && sonidoMuerteBabosa != null)
+            // SI MUERE LA BABOSA:
+            else if (!controlandoAlPulpo && sonidosMuerteBabosa != null && sonidosMuerteBabosa.Length > 0)
             {
-                miLectorDeAudio.PlayOneShot(sonidoMuerteBabosa);
+                // Elegimos un índice al azar de la lista de la babosa
+                int indiceAleatorio = Random.Range(0, sonidosMuerteBabosa.Length);
+                miLectorDeAudio.PlayOneShot(sonidosMuerteBabosa[indiceAleatorio]);
             }
         }
 
+        // Tu lógica original de posicionamiento y cámara se mantiene idéntica:
         if (hermanoMenorBabosa != null) hermanoMenorBabosa.transform.position = puntoDeReaparicion;
         if (hermanoMayorPulpo != null) hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
         
@@ -184,5 +232,14 @@ public class GameManager : MonoBehaviour
     {
         Rigidbody2D rb = objeto.GetComponent<Rigidbody2D>();
         if (rb != null) rb.linearVelocity = Vector2.zero; 
+    }
+
+    private void ActivarCartelUI(bool esPulpo)
+    {
+        if (cartelTeclasBabosa != null && cartelTeclasPulpo != null)
+        {
+            cartelTeclasPulpo.SetActive(esPulpo);
+            cartelTeclasBabosa.SetActive(!esPulpo);
+        }
     }
 }
