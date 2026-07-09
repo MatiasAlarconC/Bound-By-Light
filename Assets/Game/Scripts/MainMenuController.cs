@@ -11,13 +11,11 @@ public class MainMenuController : MonoBehaviour
     [Header("Audio (opcional)")]
     [SerializeField] private AudioSource musicSource;
 
-    private const string KEY_SAVE_EXISTS = "SaveExists";
-    private const string KEY_SAVED_LEVEL = "SavedLevel";
-    private const string KEY_MASTER = "MasterVolume";
-    private const string KEY_MUSIC = "MusicVolume";
-    private const string KEY_SFX = "SFXVolume";
-    private const string KEY_FULLSCREEN = "Fullscreen";
-    private const string KEY_LANG = "Language";
+    private const string KEY_SAVE_EXISTS  = "SaveExists";
+    private const string KEY_MASTER       = "MasterVolume";
+    private const string KEY_MUSIC        = "MusicVolume";
+    private const string KEY_SFX          = "SFXVolume";
+    private const string KEY_LAST_SCENE   = "LastScene";
 
     private VisualElement _root;
     private VisualElement _settingsOverlay;
@@ -25,8 +23,6 @@ public class MainMenuController : MonoBehaviour
     private Button _btnPlay, _btnContinue, _btnSettings, _btnClose, _btnSave;
     private Slider _sMaster, _sMusic, _sSfx;
     private Label _vMaster, _vMusic, _vSfx, _lblSaved;
-    private Toggle _fullscreen;
-    private Button _langEs, _langEn;
 
     private float _floatTime;
 
@@ -46,9 +42,6 @@ public class MainMenuController : MonoBehaviour
         _vMaster  = _root.Q<Label>("val-master");
         _vMusic   = _root.Q<Label>("val-music");
         _vSfx     = _root.Q<Label>("val-sfx");
-        _fullscreen = _root.Q<Toggle>("toggle-fullscreen");
-        _langEs   = _root.Q<Button>("lang-es");
-        _langEn   = _root.Q<Button>("lang-en");
         _angelEl  = _root.Q<VisualElement>("angel");
         _btnSave  = _root.Q<Button>("btn-save-settings");
         _lblSaved = _root.Q<Label>("lbl-saved");
@@ -81,24 +74,22 @@ public class MainMenuController : MonoBehaviour
         _sMaster.RegisterValueChangedCallback(e => OnVolume(KEY_MASTER, e.newValue, _vMaster));
         _sMusic.RegisterValueChangedCallback(e  => OnVolume(KEY_MUSIC,  e.newValue, _vMusic));
         _sSfx.RegisterValueChangedCallback(e    => OnVolume(KEY_SFX,    e.newValue, _vSfx));
-        _fullscreen.RegisterValueChangedCallback(OnFullscreen);
-
-        _langEs.clicked += () => SetLanguage("es");
-        _langEn.clicked += () => SetLanguage("en");
     }
 
     private void OnPlay()
     {
         PlayerPrefs.SetInt(KEY_SAVE_EXISTS, 1);
-        PlayerPrefs.SetInt(KEY_SAVED_LEVEL, 1);
+        PlayerPrefs.SetString(KEY_LAST_SCENE, newGameScene);
+        PlayerPrefs.DeleteKey("CheckpointX");
+        PlayerPrefs.DeleteKey("CheckpointY");
         PlayerPrefs.Save();
         SceneManager.LoadScene(newGameScene);
     }
 
     private void OnContinue()
     {
-        int level = PlayerPrefs.GetInt(KEY_SAVED_LEVEL, 1);
-        SceneManager.LoadScene("MecanicaPulpo"); // Aquí podrías usar el número de nivel para cargar diferentes escenas si lo deseas.
+        string scene = PlayerPrefs.GetString(KEY_LAST_SCENE, newGameScene);
+        SceneManager.LoadScene(scene);
     }
 
     private void RefreshContinueButton()
@@ -136,29 +127,6 @@ public class MainMenuController : MonoBehaviour
         if (musicSource != null) musicSource.volume = master * music;
     }
 
-    private void OnFullscreen(ChangeEvent<bool> e)
-    {
-        Screen.fullScreen = e.newValue;
-        PlayerPrefs.SetInt(KEY_FULLSCREEN, e.newValue ? 1 : 0);
-        PlayerPrefs.Save();
-    }
-
-    private void SetLanguage(string lang)
-    {
-        PlayerPrefs.SetString(KEY_LANG, lang);
-        PlayerPrefs.Save();
-        if (lang == "es")
-        {
-            _langEs.AddToClassList("lang-active");
-            _langEn.RemoveFromClassList("lang-active");
-        }
-        else
-        {
-            _langEn.AddToClassList("lang-active");
-            _langEs.RemoveFromClassList("lang-active");
-        }
-    }
-
     private void LoadSettings()
     {
         float master = PlayerPrefs.GetFloat(KEY_MASTER, 80f);
@@ -172,10 +140,6 @@ public class MainMenuController : MonoBehaviour
         _vMusic.text  = Mathf.RoundToInt(music)  + "%";
         _vSfx.text    = Mathf.RoundToInt(sfx)    + "%";
 
-        bool fs = PlayerPrefs.GetInt(KEY_FULLSCREEN, 0) == 1;
-        _fullscreen.SetValueWithoutNotify(fs);
-
-        SetLanguage(PlayerPrefs.GetString(KEY_LANG, "es"));
         ApplyVolumes();
     }
 }

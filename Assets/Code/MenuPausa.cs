@@ -17,6 +17,9 @@ public class MenuPausa : MonoBehaviour
     private void IrAlMenuPrincipal()
     {
         Time.timeScale = 1f;
+        PlayerPrefs.SetString("LastScene", SceneManager.GetActiveScene().name);
+        PlayerPrefs.SetInt("SaveExists", 1);
+        PlayerPrefs.Save();
         SceneManager.LoadScene("Main Menu");
     }
 }

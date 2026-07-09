@@ -85,74 +85,93 @@
     align-items: center;
 }
 
+/* ── BUTTONS ────────────────────────────────────────── */
+
 .menu-btn {
     -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
     -unity-text-align: middle-center;
     letter-spacing: 3px;
-    margin-top: 7px;
-    margin-bottom: 7px;
+    margin-top: 8px;
+    margin-bottom: 8px;
     border-radius: 50px;
     transition-property: background-color, color, border-color, scale, translate;
-    transition-duration: 0.38s;
-    transition-timing-function: ease;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-out;
     cursor: hand;
 }
 
+/* Primary — golden / call-to-action */
 .btn-primary {
-    font-size: 16px;
-    width: 272px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    background-color: rgba(232, 160, 48, 0.10);
+    font-size: 15px;
+    width: 280px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: rgba(232, 160, 48, 0.08);
     color: #e8a030;
     border-width: 1.5px;
-    border-color: rgba(232, 160, 48, 0.36);
+    border-color: rgba(232, 160, 48, 0.45);
 }
 
 .btn-primary:hover {
-    background-color: rgba(232, 160, 48, 0.22);
-    color: #f5c060;
-    border-color: rgba(232, 160, 48, 0.80);
-    scale: 1.045 1.045;
-    translate: 0 -2px;
+    background-color: rgba(232, 160, 48, 0.18);
+    color: #ffd077;
+    border-color: rgba(255, 200, 80, 0.90);
+    scale: 1.05 1.05;
+    translate: 0 -3px;
 }
 
 .btn-primary:active {
-    scale: 0.955 0.955;
-    background-color: rgba(232, 160, 48, 0.30);
+    scale: 0.96 0.96;
+    translate: 0 1px;
+    background-color: rgba(232, 160, 48, 0.28);
 }
 
+/* Secondary — muted blue, used for "continuar" */
 .btn-secondary {
     font-size: 13px;
-    width: 228px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    background-color: rgba(42, 53, 68, 0.12);
-    color: #6a7a8a;
-    border-width: 1px;
-    border-color: rgba(74, 90, 110, 0.26);
+    width: 240px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    background-color: rgba(60, 90, 120, 0.12);
+    color: #7a9ab5;
+    border-width: 1.5px;
+    border-color: rgba(80, 115, 150, 0.35);
 }
 
 .btn-secondary:hover {
-    background-color: rgba(74, 90, 110, 0.20);
-    color: #b0c0d2;
-    border-color: rgba(106, 122, 142, 0.48);
-    scale: 1.045 1.045;
-    translate: 0 -2px;
+    background-color: rgba(80, 120, 160, 0.22);
+    color: #c0d8f0;
+    border-color: rgba(110, 160, 210, 0.65);
+    scale: 1.05 1.05;
+    translate: 0 -3px;
 }
 
+.btn-secondary:active {
+    scale: 0.96 0.96;
+    translate: 0 1px;
+}
+
+/* Tertiary — ghost/text button */
 .btn-tertiary {
     font-size: 11px;
-    width: 184px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    width: 190px;
+    padding-top: 11px;
+    padding-bottom: 11px;
     background-color: rgba(0, 0, 0, 0);
-    color: #5a6a7a;
-    border-width: 0;
+    color: #4a6070;
+    border-width: 1px;
+    border-color: rgba(70, 95, 115, 0.22);
 }
 
 .btn-tertiary:hover {
-    color: #9ab0c8;
+    color: #90b0c8;
+    border-color: rgba(100, 140, 170, 0.45);
+    background-color: rgba(60, 90, 120, 0.08);
+    scale: 1.04 1.04;
+}
+
+.btn-tertiary:active {
+    scale: 0.97 0.97;
 }
 
 .credits {
@@ -257,70 +276,6 @@
     background-color: rgba(60, 80, 100, 0.20);
     margin-top: 16px;
     margin-bottom: 16px;
-}
-
-.lang-row { margin-bottom: 20px; }
-.lang-label { margin-bottom: 10px; }
-.lang-chips { flex-direction: row; }
-
-.lang-chip {
-    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: rgba(80, 100, 120, 0.80);
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 1px;
-    border-color: rgba(60, 80, 100, 0.28);
-    border-radius: 20px;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-top: 7px;
-    padding-bottom: 7px;
-    margin-right: 8px;
-    transition-property: background-color, color, border-color;
-    transition-duration: 0.3s;
-}
-
-.lang-chip:hover {
-    background-color: rgba(60, 80, 100, 0.18);
-    color: #c8d8e8;
-}
-
-.lang-active {
-    background-color: rgba(232, 160, 48, 0.12);
-    border-color: rgba(232, 160, 48, 0.55);
-    color: #e8a030;
-}
-
-.fullscreen-row {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 4px;
-}
-
-.bbl-toggle {
-    width: 40px;
-    height: 22px;
-}
-
-.bbl-toggle .unity-toggle__input {
-    flex-direction: row;
-    align-items: center;
-}
-
-.bbl-toggle .unity-toggle__checkmark {
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    background-color: rgba(50, 70, 90, 0.45);
-    border-width: 1px;
-    border-color: rgba(60, 80, 100, 0.40);
-}
-
-.bbl-toggle:checked .unity-toggle__checkmark {
-    background-color: rgba(232, 160, 48, 0.65);
-    border-color: rgba(232, 160, 48, 0.80);
 }
 
 .save-row {

@@ -1,5 +1,6 @@
 using UnityEngine;
-using Unity.Cinemachine; 
+using UnityEngine.SceneManagement;
+using Unity.Cinemachine;
 
 public class GameManager : MonoBehaviour
 {
@@ -47,7 +48,25 @@ public class GameManager : MonoBehaviour
 
         if (hermanoMenorBabosa != null)
         {
-            puntoDeReaparicion = hermanoMenorBabosa.transform.position;
+            string thisScene = SceneManager.GetActiveScene().name;
+            string savedScene = PlayerPrefs.GetString("LastScene", "");
+            bool hasCheckpoint = savedScene == thisScene
+                && PlayerPrefs.HasKey("CheckpointX")
+                && PlayerPrefs.HasKey("CheckpointY");
+
+            if (hasCheckpoint)
+            {
+                float cx = PlayerPrefs.GetFloat("CheckpointX");
+                float cy = PlayerPrefs.GetFloat("CheckpointY");
+                puntoDeReaparicion = new Vector3(cx, cy, hermanoMenorBabosa.transform.position.z);
+                hermanoMenorBabosa.transform.position = puntoDeReaparicion;
+                if (hermanoMayorPulpo != null)
+                    hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
+            }
+            else
+            {
+                puntoDeReaparicion = hermanoMenorBabosa.transform.position;
+            }
         }
 
         miLectorDeAudio = GetComponent<AudioSource>();
@@ -171,6 +190,9 @@ public class GameManager : MonoBehaviour
         if (puntoDeReaparicion != nuevaPosicion)
         {
             puntoDeReaparicion = nuevaPosicion;
+            PlayerPrefs.SetFloat("CheckpointX", nuevaPosicion.x);
+            PlayerPrefs.SetFloat("CheckpointY", nuevaPosicion.y);
+            PlayerPrefs.Save();
 
             // Reproducir sonido de guardado
             if (miLectorDeAudio != null && sonidoCheckpoint != null)

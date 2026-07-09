@@ -60,19 +60,6 @@
 
                 <ui:VisualElement class="divider" />
 
-                <ui:VisualElement class="lang-row">
-                    <ui:Label text="idioma / language" class="slider-label lang-label" />
-                    <ui:VisualElement class="lang-chips">
-                        <ui:Button text="español" name="lang-es" class="lang-chip lang-active" />
-                        <ui:Button text="english" name="lang-en" class="lang-chip" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-
-                <ui:VisualElement class="fullscreen-row">
-                    <ui:Label text="pantalla completa" class="slider-label" />
-                    <ui:Toggle name="toggle-fullscreen" class="bbl-toggle" />
-                </ui:VisualElement>
-
                 <ui:VisualElement class="save-row">
                     <ui:Button text="guardar" name="btn-save-settings" class="menu-btn btn-primary btn-save" />
                     <ui:Label text="" name="lbl-saved" class="lbl-saved" />
