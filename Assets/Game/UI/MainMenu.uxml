@@ -73,7 +73,10 @@
                     <ui:Toggle name="toggle-fullscreen" class="bbl-toggle" />
                 </ui:VisualElement>
 
-                <ui:VisualElement class="divider" />
+                <ui:VisualElement class="save-row">
+                    <ui:Button text="guardar" name="btn-save-settings" class="menu-btn btn-primary btn-save" />
+                    <ui:Label text="" name="lbl-saved" class="lbl-saved" />
+                </ui:VisualElement>
 
                 <ui:VisualElement class="close-row">
                     <ui:Button text="cerrar" name="btn-close-settings" class="menu-btn btn-tertiary" />

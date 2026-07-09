@@ -22,9 +22,9 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _root;
     private VisualElement _settingsOverlay;
     private VisualElement _angelEl;
-    private Button _btnPlay, _btnContinue, _btnSettings, _btnClose;
+    private Button _btnPlay, _btnContinue, _btnSettings, _btnClose, _btnSave;
     private Slider _sMaster, _sMusic, _sSfx;
-    private Label _vMaster, _vMusic, _vSfx;
+    private Label _vMaster, _vMusic, _vSfx, _lblSaved;
     private Toggle _fullscreen;
     private Button _langEs, _langEn;
 
@@ -50,6 +50,8 @@ public class MainMenuController : MonoBehaviour
         _langEs   = _root.Q<Button>("lang-es");
         _langEn   = _root.Q<Button>("lang-en");
         _angelEl  = _root.Q<VisualElement>("angel");
+        _btnSave  = _root.Q<Button>("btn-save-settings");
+        _lblSaved = _root.Q<Label>("lbl-saved");
 
         RegisterCallbacks();
         LoadSettings();
@@ -70,6 +72,7 @@ public class MainMenuController : MonoBehaviour
         _btnContinue.clicked += OnContinue;
         _btnSettings.clicked += OpenSettings;
         _btnClose.clicked    += CloseSettings;
+        _btnSave.clicked     += SaveSettings;
 
         VisualElement backdrop = _root.Q<VisualElement>("settings-backdrop");
         if (backdrop != null)
@@ -107,6 +110,16 @@ public class MainMenuController : MonoBehaviour
 
     private void OpenSettings()  => _settingsOverlay.RemoveFromClassList("hidden");
     private void CloseSettings() => _settingsOverlay.AddToClassList("hidden");
+
+    private void SaveSettings()
+    {
+        PlayerPrefs.Save();
+        ApplyVolumes();
+        if (_lblSaved == null) return;
+        _lblSaved.text = "✓ cambios guardados";
+        var lbl = _lblSaved;
+        _root.schedule.Execute(() => lbl.text = "").StartingIn(2000);
+    }
 
     private void OnVolume(string key, float value, Label lbl)
     {
