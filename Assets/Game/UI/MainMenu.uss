@@ -12,8 +12,9 @@
 .background {
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
-    background-color: #101c2c;
+    background-image: url("project://database/Assets/Game/UI/Art/background.png");
     -unity-background-scale-mode: scale-and-crop;
+    background-color: #020810;
 }
 
 .slug-creature {

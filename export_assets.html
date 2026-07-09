@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>BBL — Export Assets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080e16;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 80px;
+      padding: 80px 60px;
+      font-family: monospace;
+    }
+    .section { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .instructions {
+      color: #e8a030;
+      font-size: 13px;
+      background: rgba(232,160,48,0.08);
+      border: 1px solid rgba(232,160,48,0.3);
+      border-radius: 8px;
+      padding: 8px 16px;
+    }
+    .label { color: #4a5a6e; font-size: 11px; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     FONDO MENÚ  →  background.png
+     ══════════════════════════════════════════ -->
+<div class="section">
+  <div class="instructions">0. Capturar el nodo de abajo → guardar como <strong>background.png</strong></div>
+  <div class="label">BACKGROUND.PNG</div>
+  <div id="background-node" style="
+    width: 1920px; height: 1080px; position: relative; overflow: hidden;
+    background: radial-gradient(ellipse 80% 70% at 50% 45%,
+      #0f1e30 0%, #091526 35%, #050e1a 65%, #020810 100%);
+  ">
+    <!-- Vignette suave en los bordes -->
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 110% 110% at 50% 50%, transparent 40%, rgba(2,6,12,0.72) 100%);"></div>
+    <!-- Partículas / puntos bioluminiscentes -->
+    <svg style="position:absolute;inset:0;width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="480"  cy="280" r="2"   fill="rgba(140,200,240,0.45)"/>
+      <circle cx="540"  cy="320" r="1.4" fill="rgba(140,200,240,0.35)"/>
+      <circle cx="610"  cy="260" r="1.8" fill="rgba(160,210,250,0.40)"/>
+      <circle cx="920"  cy="190" r="2.2" fill="rgba(140,200,240,0.38)"/>
+      <circle cx="980"  cy="240" r="1.5" fill="rgba(120,180,230,0.32)"/>
+      <circle cx="1050" cy="210" r="2"   fill="rgba(140,200,240,0.42)"/>
+      <circle cx="1280" cy="300" r="1.6" fill="rgba(140,200,240,0.35)"/>
+      <circle cx="1350" cy="260" r="2"   fill="rgba(160,210,250,0.38)"/>
+      <circle cx="1440" cy="290" r="1.4" fill="rgba(140,200,240,0.30)"/>
+      <circle cx="760"  cy="350" r="1.8" fill="rgba(120,180,230,0.28)"/>
+      <circle cx="820"  cy="310" r="1.2" fill="rgba(140,200,240,0.25)"/>
+      <circle cx="700"  cy="400" r="1.5" fill="rgba(100,170,220,0.22)"/>
+      <circle cx="1160" cy="370" r="1.6" fill="rgba(120,180,230,0.28)"/>
+      <circle cx="1220" cy="410" r="1.2" fill="rgba(100,160,210,0.22)"/>
+    </svg>
+    <!-- Rayos de luz desde arriba (muy sutiles) -->
+    <svg style="position:absolute;top:0;left:0;width:100%;height:55%;opacity:0.08;" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="ray1" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#80c0e0" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#80c0e0" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <polygon points="820,0 900,0 1040,590 760,590" fill="url(#ray1)"/>
+      <polygon points="940,0 1000,0 1110,590 880,590" fill="url(#ray1)" opacity="0.6"/>
+      <polygon points="700,0 760,0  860,590  640,590" fill="url(#ray1)" opacity="0.4"/>
+      <polygon points="1060,0 1120,0 1220,590 1000,590" fill="url(#ray1)" opacity="0.4"/>
+    </svg>
+  </div>
+</div>
+
+<!-- SVG filters (shared) -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden">
+  <defs>
+    <filter id="f-creature" x="-28%" y="-28%" width="156%" height="156%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="5" seed="4" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="disp"/>
+      <feGaussianBlur in="disp" stdDeviation="2.8"/>
+    </filter>
+    <filter id="f-title" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blurWide"/>
+      <feColorMatrix in="blurWide" type="matrix"
+        values="1.6 0.25 0 0 0.04
+                0.4  0.7 0 0 0
+                0    0  0.3 0 0
+                0    0  0  0.55 0" result="warmBloom"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blurSharp"/>
+      <feMerge>
+        <feMergeNode in="warmBloom"/>
+        <feMergeNode in="blurSharp"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="f-rough" x="-12%" y="-28%" width="124%" height="156%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.048 0.11" numOctaves="3" seed="19" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ══════════════════════════════════════════
+     TÍTULO  →  title_glow.png
+     ══════════════════════════════════════════ -->
+<div class="section">
+  <div class="instructions">1. Clic derecho sobre el recuadro de abajo → Inspect → clic derecho en el nodo resaltado → "Capture node screenshot" → guardar como <strong>title_glow.png</strong></div>
+  <div class="label">TITLE_GLOW.PNG</div>
+  <div id="title-node" style="padding:50px 80px; filter:url(#f-title);">
+    <div style="filter:url(#f-rough); text-align:center;">
+      <div style="font-family:'Caveat',cursive; line-height:1.05;">
+        <div style="font-size:110px; font-weight:700; color:#dce8f5; letter-spacing:0.02em;">Bound</div>
+        <div style="font-size:64px; font-weight:700; color:#8aa0b8; letter-spacing:0.28em; margin-top:-6px; padding-left:0.28em;">by light</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     BABOSA  →  slug.png
+     ══════════════════════════════════════════ -->
+<div class="section">
+  <div class="instructions">2. Clic derecho sobre el SVG de abajo → Inspect → clic derecho en el nodo → "Capture node screenshot" → guardar como <strong>slug.png</strong></div>
+  <div class="label">SLUG.PNG</div>
+  <svg id="slug-node" viewBox="0 0 450 280" width="900" height="560"
+    fill="none" xmlns="http://www.w3.org/2000/svg"
+    style="filter:url(#f-creature); display:block;">
+
+    <ellipse cx="225" cy="268" rx="145" ry="10" fill="#030508" opacity="0.35"/>
+    <path d="M 62 196 C 38 190 20 170 18 150 C 16 128 30 110 55 103 C 70 97 90 95 112 95 C 285 92 365 98 392 108 C 415 117 428 134 425 152 C 422 170 408 182 384 188 C 326 202 110 208 62 196 Z"
+      fill="none" stroke="#1a2030" stroke-width="16" opacity="0.28"/>
+    <path d="M 62 196 C 38 190 20 170 18 150 C 16 128 30 110 55 103 C 70 97 90 95 112 95 C 285 92 365 98 392 108 C 415 117 428 134 425 152 C 422 170 408 182 384 188 C 326 202 110 208 62 196 Z"
+      fill="#0c0e15"/>
+    <ellipse cx="105" cy="155" rx="14" ry="10" fill="rgba(208,222,236,0.42)" transform="rotate(-9 105 155)"/>
+    <ellipse cx="148" cy="170" rx="10" ry="7"  fill="rgba(208,222,236,0.36)" transform="rotate(7 148 170)"/>
+    <ellipse cx="192" cy="148" rx="16" ry="11" fill="rgba(208,222,236,0.40)" transform="rotate(-5 192 148)"/>
+    <ellipse cx="236" cy="165" rx="11" ry="8"  fill="rgba(208,222,236,0.36)" transform="rotate(8 236 165)"/>
+    <ellipse cx="278" cy="150" rx="14" ry="10" fill="rgba(208,222,236,0.38)" transform="rotate(-7 278 150)"/>
+    <ellipse cx="320" cy="165" rx="10" ry="7"  fill="rgba(208,222,236,0.33)" transform="rotate(5 320 165)"/>
+    <ellipse cx="358" cy="152" rx="12" ry="9"  fill="rgba(208,222,236,0.36)" transform="rotate(-5 358 152)"/>
+    <ellipse cx="85"  cy="172" rx="8"  ry="6"  fill="rgba(208,222,236,0.30)" transform="rotate(12 85 172)"/>
+    <ellipse cx="172" cy="135" rx="8"  ry="6"  fill="rgba(208,222,236,0.27)" transform="rotate(-11 172 135)"/>
+    <ellipse cx="256" cy="178" rx="9"  ry="7"  fill="rgba(208,222,236,0.29)" transform="rotate(7 256 178)"/>
+    <ellipse cx="338" cy="140" rx="8"  ry="6"  fill="rgba(208,222,236,0.26)" transform="rotate(-8 338 140)"/>
+    <ellipse cx="390" cy="162" rx="7"  ry="5"  fill="rgba(208,222,236,0.25)" transform="rotate(4 390 162)"/>
+    <path d="M 394 148 Q 400 144 406 148" stroke="rgba(120,145,168,0.55)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g id="slug-plumes"></g>
+  </svg>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ÁNGEL  →  angel.png
+     ══════════════════════════════════════════ -->
+<div class="section">
+  <div class="instructions">3. Clic derecho sobre el div del ángel → Inspect → clic derecho en el nodo → "Capture node screenshot" → guardar como <strong>angel.png</strong></div>
+  <div class="label">ANGEL.PNG</div>
+  <div id="angel-node" style="width:600px;height:900px;position:relative;">
+    <div style="position:absolute;inset:-100px;
+      background:radial-gradient(ellipse 52% 50% at 46% 50%, rgba(232,160,48,0.26) 0%, rgba(232,160,48,0.07) 55%, transparent 78%);">
+    </div>
+    <svg viewBox="0 0 320 450" width="600" height="900" fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style="position:relative;display:block;filter:url(#f-creature);">
+
+      <path d="M 118 150 C 92 138 38 134 6 158 C -20 178 -14 208 8 226 C 30 244 68 238 102 222 C 134 207 128 172 122 156 Z" fill="#6a82a2" opacity="0.50"/>
+      <path d="M 118 150 C 96 142 52 142 24 162 C 4 178 2 200 18 216 C 34 232 66 226 98 212 C 126 200 124 174 122 158 Z" fill="#8aa0ba" opacity="0.30"/>
+      <path d="M 114 158 Q 66 170 24 194" stroke="rgba(175,205,235,0.28)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M 136 150 C 162 136 218 132 258 150 C 288 164 294 192 278 210 C 262 228 226 224 192 210 C 160 196 140 172 136 156 Z" fill="#6a82a2" opacity="0.50"/>
+      <path d="M 136 150 C 158 140 208 138 244 154 C 268 168 272 190 258 206 C 242 222 210 216 182 204 C 154 192 140 170 136 158 Z" fill="#8aa0ba" opacity="0.30"/>
+      <path d="M 140 158 Q 190 168 236 190" stroke="rgba(175,205,235,0.28)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M 100 168 C 84 190 78 228 82 268 C 86 308 100 350 118 385 C 134 416 158 440 180 446 C 202 452 222 440 228 422 C 236 400 224 374 210 350 C 195 324 184 294 182 262 C 180 230 190 200 190 170 C 172 152 132 155 100 168 Z" fill="#7284a4" opacity="0.44"/>
+      <path d="M 106 172 C 94 194 90 230 94 266 C 98 304 112 344 128 378 C 144 408 166 432 182 436 C 198 440 212 428 216 412 C 222 392 212 368 198 344 C 184 318 174 288 172 258 C 170 228 180 200 180 172 C 165 154 130 158 106 172 Z" fill="#c07020" opacity="0.84"/>
+      <path d="M 114 176 C 104 198 101 232 105 266 C 109 300 122 340 136 372 C 148 398 165 422 177 426 C 190 410 186 382 175 356 C 163 328 156 298 155 268 C 154 238 162 208 162 178 C 152 160 128 162 114 176 Z" fill="#e89030" opacity="0.55"/>
+      <path d="M 148 168 C 143 208 140 250 142 288 C 144 326 152 368 162 400" stroke="#f0d000" stroke-width="5" opacity="0.55" fill="none" stroke-linecap="round"/>
+      <path d="M 148 168 C 143 208 140 250 142 288 C 144 326 152 368 162 400" stroke="rgba(255,246,60,0.88)" stroke-width="1.6" opacity="0.9" fill="none" stroke-linecap="round"/>
+      <circle cx="126" cy="92" r="54" fill="#b06c18" opacity="0.68"/>
+      <circle cx="126" cy="89" r="40" fill="#e09030" opacity="0.74"/>
+      <circle cx="126" cy="87" r="27" fill="#f5b040" opacity="0.72"/>
+      <circle cx="126" cy="85" r="16" fill="#ffe060" opacity="0.80"/>
+      <circle cx="126" cy="84" r="8"  fill="#fff480" opacity="0.92"/>
+      <path d="M 104 52 C 94 34 98 14 108 11 C 115 9 118 18 115 30 C 112 40 106 48 104 52 Z" fill="#7890b0" opacity="0.74"/>
+      <path d="M 148 52 C 158 34 154 14 144 11 C 137 9 134 18 137 30 C 140 40 146 48 148 52 Z" fill="#7890b0" opacity="0.74"/>
+      <path d="M 106 48 C 99 34 102 18 110 16 C 114 24 112 36 108 46 Z" fill="#a0b4cc" opacity="0.36"/>
+      <path d="M 146 48 C 153 34 150 18 142 16 C 138 24 140 36 144 46 Z" fill="#a0b4cc" opacity="0.36"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+// Genera los paths de las plumas de la babosa
+function makePlume(bx, by, dx, dy, len, n) {
+  const paths = [];
+  const px = -dy, py = dx;
+  const cx = bx + dx * len * 0.5 + px * 5;
+  const cy = by + dy * len * 0.5 + py * 5;
+  const ex = bx + dx * len, ey = by + dy * len;
+  paths.push({ d: `M ${bx.toFixed(1)} ${by.toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`, sw: 1.8, op: 0.76 });
+  for (let i = 1; i <= n; i++) {
+    const t = i / (n + 1);
+    const fpx = bx + dx * len * t;
+    const fpy = by + dy * len * t;
+    const flen = (1 - t * 0.42) * 18;
+    for (const s of [-1, 1]) {
+      const fcx = fpx + (px + dx * 0.12) * flen * 0.55 * s;
+      const fcy = fpy + (py + dy * 0.12) * flen * 0.55 * s;
+      const fx = fpx + px * flen * s;
+      const fy = fpy + py * flen * s;
+      paths.push({ d: `M ${fpx.toFixed(1)} ${fpy.toFixed(1)} Q ${fcx.toFixed(1)} ${fcy.toFixed(1)} ${fx.toFixed(1)} ${fy.toFixed(1)}`, sw: 0.85, op: 0.52 });
+      const sfx = fx + px * 4 * s, sfy = fy + py * 4 * s;
+      paths.push({ d: `M ${fx.toFixed(1)} ${fy.toFixed(1)} L ${sfx.toFixed(1)} ${sfy.toFixed(1)}`, sw: 0.55, op: 0.32 });
+    }
+  }
+  return paths;
+}
+
+const plumeDefs = [
+  { bx: 116, by: 108, dx: -0.20, dy: -0.98, len: 64, n: 5 },
+  { bx: 162, by: 106, dx: -0.07, dy: -1.00, len: 74, n: 6 },
+  { bx: 210, by: 103, dx:  0.00, dy: -1.00, len: 84, n: 7 },
+  { bx: 256, by: 105, dx:  0.07, dy: -1.00, len: 73, n: 6 },
+  { bx: 298, by: 108, dx:  0.18, dy: -0.98, len: 62, n: 5 },
+];
+
+const NS = 'http://www.w3.org/2000/svg';
+const group = document.getElementById('slug-plumes');
+plumeDefs.forEach(p => {
+  makePlume(p.bx, p.by, p.dx, p.dy, p.len, p.n).forEach(({ d, sw, op }) => {
+    const el = document.createElementNS(NS, 'path');
+    el.setAttribute('d', d);
+    el.setAttribute('stroke', `rgba(192,206,220,${op})`);
+    el.setAttribute('stroke-width', sw);
+    el.setAttribute('fill', 'none');
+    el.setAttribute('stroke-linecap', 'round');
+    group.appendChild(el);
+  });
+});
+</script>
+</body>
+</html>
