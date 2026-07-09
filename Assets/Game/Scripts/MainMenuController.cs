@@ -8,10 +8,6 @@ public class MainMenuController : MonoBehaviour
     [Header("Escenas")]
     [SerializeField] private string newGameScene = "MecanicaPulpo";
 
-    [Header("Título")]
-    [Tooltip("Si tienes el PNG del título con glow, marca esto para usar la imagen en vez del texto.")]
-    [SerializeField] private bool useTitleImage = false;
-
     [Header("Audio (opcional)")]
     [SerializeField] private AudioSource musicSource;
 
@@ -25,11 +21,14 @@ public class MainMenuController : MonoBehaviour
 
     private VisualElement _root;
     private VisualElement _settingsOverlay;
+    private VisualElement _angelEl;
     private Button _btnPlay, _btnContinue, _btnSettings, _btnClose;
     private Slider _sMaster, _sMusic, _sSfx;
     private Label _vMaster, _vMusic, _vSfx;
     private Toggle _fullscreen;
     private Button _langEs, _langEn;
+
+    private float _floatTime;
 
     private void OnEnable()
     {
@@ -50,29 +49,19 @@ public class MainMenuController : MonoBehaviour
         _fullscreen = _root.Q<Toggle>("toggle-fullscreen");
         _langEs   = _root.Q<Button>("lang-es");
         _langEn   = _root.Q<Button>("lang-en");
+        _angelEl  = _root.Q<VisualElement>("angel");
 
-        SetupTitle();
         RegisterCallbacks();
         LoadSettings();
         RefreshContinueButton();
     }
 
-    private void SetupTitle()
+    private void Update()
     {
-        VisualElement titleImg  = _root.Q<VisualElement>("title-img");
-        VisualElement titleText = _root.Q<VisualElement>("title-text-fallback");
-        if (titleImg == null || titleText == null) return;
-
-        if (useTitleImage)
-        {
-            titleImg.style.display  = DisplayStyle.Flex;
-            titleText.style.display = DisplayStyle.None;
-        }
-        else
-        {
-            titleImg.style.display  = DisplayStyle.None;
-            titleText.style.display = DisplayStyle.Flex;
-        }
+        if (_angelEl == null) return;
+        _floatTime += Time.deltaTime;
+        float offset = Mathf.Sin(_floatTime * 1.1f) * 10f;
+        _angelEl.style.translate = new StyleTranslate(new Translate(0, offset, 0));
     }
 
     private void RegisterCallbacks()

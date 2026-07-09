@@ -20,21 +20,23 @@
 .slug-creature {
     position: absolute;
     left: 1%;
-    bottom: 3%;
-    width: 420px;
-    height: 260px;
-    background-image: url("project://database/Assets/Game/UI/Art/slug.png");
+    bottom: 1%;
+    width: 180px;
+    height: 180px;
+    background-image: url("project://database/Assets/Characters/DarkBrother/Idle_Babosa/0001.png");
     -unity-background-scale-mode: scale-to-fit;
+    opacity: 0.70;
 }
 
 .angel-creature {
     position: absolute;
-    right: 2%;
-    bottom: 3%;
-    width: 300px;
-    height: 420px;
-    background-image: url("project://database/Assets/Game/UI/Art/angel.png");
+    right: 1%;
+    bottom: 1%;
+    width: 140px;
+    height: 190px;
+    background-image: url("project://database/Assets/Characters/LightBrother/BaseForm/0001.png");
     -unity-background-scale-mode: scale-to-fit;
+    opacity: 0.70;
 }
 
 .menu-content {
@@ -47,18 +49,19 @@
 }
 
 .title-img {
-    width: 540px;
-    height: 230px;
-    margin-bottom: 40px;
-    background-image: url("project://database/Assets/Game/UI/Art/title_glow.png");
+    width: 720px;
+    height: 300px;
+    margin-bottom: 36px;
+    background-image: url("project://database/Assets/Characters/UI/logo.png");
     -unity-background-scale-mode: scale-to-fit;
-    display: none;
+    display: flex;
 }
 
 .title-text-fallback {
     align-items: center;
     margin-bottom: 44px;
     rotate: -2.5deg;
+    display: none;
 }
 
 .title-bound {
@@ -163,6 +166,8 @@
     -unity-text-align: middle-center;
 }
 
+/* ── SETTINGS OVERLAY ─────────────────────────────── */
+
 .settings-overlay {
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
@@ -177,68 +182,69 @@
 .settings-backdrop {
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
-    background-color: rgba(5, 10, 18, 0.82);
+    background-color: rgba(2, 6, 14, 0.88);
 }
 
 .settings-card {
-    width: 520px;
-    background-color: rgba(10, 18, 30, 0.96);
+    width: 500px;
+    background-color: rgba(8, 15, 26, 0.97);
     border-width: 1px;
-    border-color: rgba(74, 90, 110, 0.22);
-    border-radius: 26px;
-    padding-left: 50px;
-    padding-right: 50px;
-    padding-top: 44px;
-    padding-bottom: 44px;
+    border-color: rgba(100, 130, 160, 0.18);
+    border-radius: 20px;
+    padding-left: 44px;
+    padding-right: 44px;
+    padding-top: 36px;
+    padding-bottom: 36px;
 }
 
 .settings-title {
-    -unity-font: url("project://database/Assets/Game/Fonts/Caveat-Bold%20FONT.ttf");
-    font-size: 42px;
-    color: #c8d8e8;
+    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: rgba(140, 170, 200, 0.70);
     -unity-text-align: middle-center;
-    margin-bottom: 34px;
+    margin-bottom: 28px;
 }
 
-.slider-row { margin-bottom: 26px; }
+.slider-row { margin-bottom: 20px; }
 
 .slider-head {
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .slider-label {
     -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 2px;
-    color: #5a6a7a;
+    color: rgba(90, 110, 130, 0.90);
 }
 
 .slider-value {
     -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
-    font-size: 11px;
-    color: #4a5a6e;
+    font-size: 10px;
+    color: #e8a030;
 }
 
-.bbl-slider { height: 26px; }
+.bbl-slider { height: 24px; }
 
 .bbl-slider .unity-base-slider__tracker {
-    background-color: rgba(74, 90, 110, 0.28);
+    background-color: rgba(60, 80, 100, 0.35);
     border-radius: 2px;
     border-width: 0;
-    height: 3px;
+    height: 2px;
     margin-top: 11px;
 }
 
 .bbl-slider .unity-base-slider__dragger {
-    background-color: #6a7a8e;
+    background-color: #4a6070;
     border-radius: 50%;
-    width: 17px;
-    height: 17px;
+    width: 14px;
+    height: 14px;
     border-width: 2px;
-    border-color: rgba(180, 210, 255, 0.3);
-    margin-top: -8px;
+    border-color: rgba(140, 180, 220, 0.25);
+    margin-top: -7px;
 }
 
 .bbl-slider .unity-base-slider__dragger:hover {
@@ -248,41 +254,41 @@
 
 .divider {
     height: 1px;
-    background-color: rgba(74, 90, 110, 0.17);
-    margin-top: 22px;
-    margin-bottom: 22px;
+    background-color: rgba(60, 80, 100, 0.20);
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
-.lang-row { margin-bottom: 26px; }
-.lang-label { margin-bottom: 13px; }
+.lang-row { margin-bottom: 20px; }
+.lang-label { margin-bottom: 10px; }
 .lang-chips { flex-direction: row; }
 
 .lang-chip {
     -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 2px;
-    color: #506070;
+    color: rgba(80, 100, 120, 0.80);
     background-color: rgba(0, 0, 0, 0);
     border-width: 1px;
-    border-color: rgba(74, 90, 110, 0.24);
-    border-radius: 22px;
-    padding-left: 22px;
-    padding-right: 22px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    margin-right: 10px;
+    border-color: rgba(60, 80, 100, 0.28);
+    border-radius: 20px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    margin-right: 8px;
     transition-property: background-color, color, border-color;
     transition-duration: 0.3s;
 }
 
 .lang-chip:hover {
-    background-color: rgba(74, 90, 110, 0.14);
+    background-color: rgba(60, 80, 100, 0.18);
     color: #c8d8e8;
 }
 
 .lang-active {
-    background-color: rgba(232, 160, 48, 0.15);
-    border-color: rgba(232, 160, 48, 0.60);
+    background-color: rgba(232, 160, 48, 0.12);
+    border-color: rgba(232, 160, 48, 0.55);
     color: #e8a030;
 }
 
@@ -290,12 +296,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .bbl-toggle {
-    width: 44px;
-    height: 24px;
+    width: 40px;
+    height: 22px;
 }
 
 .bbl-toggle .unity-toggle__input {
@@ -304,21 +310,21 @@
 }
 
 .bbl-toggle .unity-toggle__checkmark {
-    width: 44px;
-    height: 24px;
-    border-radius: 12px;
-    background-color: rgba(74, 90, 110, 0.40);
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background-color: rgba(50, 70, 90, 0.45);
     border-width: 1px;
-    border-color: rgba(74, 90, 110, 0.40);
+    border-color: rgba(60, 80, 100, 0.40);
 }
 
 .bbl-toggle:checked .unity-toggle__checkmark {
-    background-color: rgba(232, 160, 48, 0.70);
+    background-color: rgba(232, 160, 48, 0.65);
     border-color: rgba(232, 160, 48, 0.80);
 }
 
 .close-row {
     flex-direction: row;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 8px;
 }
