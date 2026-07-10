@@ -14,17 +14,19 @@ public class HUDControlador : MonoBehaviour
 
     public void ActualizarIndicador(bool esPulpoActivo)
     {
-        // 1. Cambiar la foto y el texto si está activo el Pulpo
         if (esPulpoActivo)
         {
-            if (iconoPersonajeActual != null) iconoPersonajeActual.sprite = fotoPulpo;
-            if (textoPersonajeActual != null) textoPersonajeActual.text = "Pulpo"; // <--- NUEVO
+            if (iconoPersonajeActual != null && fotoPulpo != null)
+                iconoPersonajeActual.sprite = fotoPulpo;
+            if (textoPersonajeActual != null)
+                textoPersonajeActual.text = "Pulpo";
         }
-        // 2. Cambiar la foto y el texto si está activa la Babosa
         else
         {
-            if (iconoPersonajeActual != null) iconoPersonajeActual.sprite = fotoBabosa;
-            if (textoPersonajeActual != null) textoPersonajeActual.text = "Babosa"; // <--- NUEVO
+            if (iconoPersonajeActual != null && fotoBabosa != null)
+                iconoPersonajeActual.sprite = fotoBabosa;
+            if (textoPersonajeActual != null)
+                textoPersonajeActual.text = "Babosa";
         }
     }
 }

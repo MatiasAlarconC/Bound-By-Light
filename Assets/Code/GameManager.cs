@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(teclaCambio))
+        if (Input.GetKeyDown(teclaCambio) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
         {
             controlandoAlPulpo = !controlandoAlPulpo;
             ActualizarControlesEstrictos();
