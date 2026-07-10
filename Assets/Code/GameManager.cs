@@ -32,6 +32,12 @@ public class GameManager : MonoBehaviour
 
     private AudioSource miLectorDeAudio;
 
+    [Header("Triángulos Indicadores de Control")]
+    [Tooltip("Arrastra aquí el objeto del triángulo que está dentro de la Babosa")]
+    [SerializeField] private GameObject trianguloIndicadorBabosa;
+    [Tooltip("Arrastra aquí el objeto del triángulo que está dentro del Pulpo")]
+    [SerializeField] private GameObject trianguloIndicadorPulpo;
+
     [Header("UI de Teclas de Personajes")]
     [SerializeField] private GameObject cartelTeclasBabosa;
     [SerializeField] private GameObject cartelTeclasPulpo;
@@ -141,6 +147,10 @@ public class GameManager : MonoBehaviour
         // Actualizar outline en ambos personajes
         if (hermanoMenorBabosa != null) hermanoMenorBabosa.SetOutlineActivo(!controlandoAlPulpo);
         if (hermanoMayorPulpo != null) hermanoMayorPulpo.SetOutlineActivo(controlandoAlPulpo);
+
+        // Triángulos indicadores de control
+        if (trianguloIndicadorBabosa != null) trianguloIndicadorBabosa.SetActive(!controlandoAlPulpo);
+        if (trianguloIndicadorPulpo != null) trianguloIndicadorPulpo.SetActive(controlandoAlPulpo);
 
         if (hudUI != null)
         {
