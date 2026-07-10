@@ -169,10 +169,7 @@ public class MainMenuController : MonoBehaviour
     {
         PlayerPrefs.Save();
         ApplyVolumes();
-        if (_lblSaved == null) return;
-        _lblSaved.text = "✓ cambios guardados";
-        var lbl = _lblSaved;
-        _root.schedule.Execute(() => lbl.text = "").StartingIn(2000);
+        CloseSettings();
     }
 
     private void OnVolume(string key, float value, Label lbl)
@@ -187,7 +184,8 @@ public class MainMenuController : MonoBehaviour
     {
         float master = PlayerPrefs.GetFloat(KEY_MASTER, 80f) / 100f;
         float music  = PlayerPrefs.GetFloat(KEY_MUSIC,  70f) / 100f;
-        if (musicSource != null) musicSource.volume = master * music;
+        AudioListener.volume = master;
+        if (musicSource != null) musicSource.volume = music;
     }
 
     private void LoadSettings()

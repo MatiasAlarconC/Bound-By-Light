@@ -45,13 +45,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-bottom: 80px;
+    padding-bottom: 160px;
 }
 
 .title-img {
-    width: 720px;
-    height: 300px;
-    margin-bottom: 36px;
+    width: 860px;
+    height: 360px;
+    margin-bottom: 28px;
     background-image: url("project://database/Assets/Characters/UI/logo.png");
     -unity-background-scale-mode: scale-to-fit;
     display: flex;
@@ -65,14 +65,14 @@
 }
 
 .title-bound {
-    -unity-font: url("project://database/Assets/Game/Fonts/Caveat-Bold%20FONT.ttf");
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/Caveat-Bold.asset");
     font-size: 104px;
     color: #dce8f5;
     -unity-text-align: middle-center;
 }
 
 .title-bylight {
-    -unity-font: url("project://database/Assets/Game/Fonts/Caveat-Bold%20FONT.ttf");
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/Caveat-Bold.asset");
     font-size: 60px;
     color: #8aa0b8;
     letter-spacing: 14px;
@@ -88,11 +88,11 @@
 /* ── BUTTONS ────────────────────────────────────────── */
 
 .menu-btn {
-    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.asset");
     -unity-text-align: middle-center;
     letter-spacing: 3px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     border-radius: 50px;
     transition-property: background-color, color, border-color, scale, translate;
     transition-duration: 0.25s;
@@ -100,81 +100,70 @@
     cursor: hand;
 }
 
-/* Primary — golden / call-to-action */
+/* Primary — "continuar": sutil, azul grisáceo */
 .btn-primary {
-    font-size: 13px;
-    width: 280px;
-    padding-top: 14px;
-    padding-bottom: 14px;
-    background-color: rgba(232, 160, 48, 0.08);
-    color: #e8a030;
-    border-width: 1.5px;
-    border-color: rgba(232, 160, 48, 0.45);
+    font-size: 12px;
+    width: 230px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: rgba(50, 70, 95, 0.10);
+    color: rgba(175, 200, 225, 0.85);
+    border-width: 1px;
+    border-color: rgba(120, 150, 185, 0.45);
 }
 
 .btn-primary:hover {
-    background-color: rgba(232, 160, 48, 0.18);
-    color: #ffd077;
-    border-color: rgba(255, 200, 80, 0.90);
-    scale: 1.05 1.05;
-    translate: 0 -3px;
+    background-color: rgba(70, 100, 135, 0.18);
+    color: rgba(210, 230, 250, 0.98);
+    border-color: rgba(140, 175, 215, 0.70);
+    scale: 1.04 1.04;
+    translate: 0 -2px;
 }
 
 .btn-primary:active {
-    scale: 0.96 0.96;
+    scale: 0.97 0.97;
     translate: 0 1px;
-    background-color: rgba(232, 160, 48, 0.28);
+    background-color: rgba(70, 100, 135, 0.25);
 }
 
-/* Secondary — muted blue, used for "continuar" */
+/* Secondary — no se usa en el menú principal */
 .btn-secondary {
-    font-size: 13px;
-    width: 280px;
-    padding-top: 14px;
-    padding-bottom: 14px;
+    font-size: 12px;
+    width: 230px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     background-color: rgba(60, 90, 120, 0.12);
     color: #7a9ab5;
-    border-width: 1.5px;
+    border-width: 1px;
     border-color: rgba(80, 115, 150, 0.35);
 }
 
-.btn-secondary:hover {
-    background-color: rgba(80, 120, 160, 0.22);
-    color: #c0d8f0;
-    border-color: rgba(110, 160, 210, 0.65);
-    scale: 1.05 1.05;
-    translate: 0 -3px;
-}
-
-.btn-secondary:active {
-    scale: 0.96 0.96;
-    translate: 0 1px;
-}
-
-/* Danger — "nueva partida", muted red */
+/* Danger — "nueva partida": dorado/ámbar prominente */
 .btn-danger {
-    font-size: 13px;
-    width: 280px;
-    padding-top: 14px;
-    padding-bottom: 14px;
-    background-color: rgba(0, 0, 0, 0);
-    color: rgba(180, 80, 70, 0.65);
-    border-width: 1px;
-    border-color: rgba(160, 60, 55, 0.22);
+    font-size: 12px;
+    width: 230px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: rgba(232, 160, 48, 0.28);
+    color: #f0b840;
+    border-width: 1.5px;
+    border-color: rgba(232, 160, 48, 0.75);
 }
 
 .btn-danger:hover {
-    background-color: rgba(160, 50, 45, 0.12);
-    color: rgba(220, 100, 90, 0.90);
-    border-color: rgba(200, 70, 65, 0.40);
+    background-color: rgba(232, 160, 48, 0.40);
+    color: #ffd070;
+    border-color: rgba(255, 200, 80, 0.95);
     scale: 1.04 1.04;
+    translate: 0 -2px;
 }
 
 .btn-danger:active {
     scale: 0.97 0.97;
+    translate: 0 1px;
 }
 
-/* Confirm state — second click needed to confirm new game */
+/* Confirm — segundo click nueva partida */
 .btn-confirm {
     background-color: rgba(180, 60, 50, 0.18);
     color: #e87060;
@@ -188,22 +177,22 @@
     scale: 1.04 1.04;
 }
 
-/* Tertiary — ghost/text button */
+/* Tertiary — "configuración": muy sutil */
 .btn-tertiary {
-    font-size: 13px;
-    width: 280px;
-    padding-top: 14px;
-    padding-bottom: 14px;
+    font-size: 12px;
+    width: 230px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     background-color: rgba(0, 0, 0, 0);
-    color: #4a6070;
+    color: rgba(100, 125, 150, 0.75);
     border-width: 1px;
-    border-color: rgba(70, 95, 115, 0.22);
+    border-color: rgba(70, 95, 120, 0.22);
 }
 
 .btn-tertiary:hover {
-    color: #90b0c8;
-    border-color: rgba(100, 140, 170, 0.45);
-    background-color: rgba(60, 90, 120, 0.08);
+    color: rgba(150, 175, 200, 0.92);
+    border-color: rgba(100, 135, 165, 0.45);
+    background-color: rgba(50, 75, 100, 0.08);
     scale: 1.04 1.04;
 }
 
@@ -213,9 +202,9 @@
 
 .credits {
     position: absolute;
-    bottom: 18px;
+    bottom: 10px;
     left: 0; right: 0;
-    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.asset");
     font-size: 9px;
     letter-spacing: 4px;
     color: rgba(74, 90, 110, 0.48);
@@ -242,24 +231,27 @@
 }
 
 .settings-card {
-    width: 500px;
-    background-color: rgba(8, 15, 26, 0.97);
+    position: relative;
+    width: 480px;
+    background-color: rgba(12, 18, 30, 0.96);
     border-width: 1px;
-    border-color: rgba(100, 130, 160, 0.18);
-    border-radius: 20px;
-    padding-left: 44px;
-    padding-right: 44px;
-    padding-top: 36px;
+    border-color: rgba(70, 100, 130, 0.20);
+    border-radius: 24px;
+    padding-left: 48px;
+    padding-right: 48px;
+    padding-top: 44px;
     padding-bottom: 36px;
 }
 
+/* Título usa Caveat para coincidir con la referencia */
 .settings-title {
-    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
-    font-size: 13px;
-    letter-spacing: 5px;
-    color: rgba(140, 170, 200, 0.70);
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/Caveat-Bold.asset");
+    font-size: 30px;
+    letter-spacing: 1px;
+    color: rgba(200, 215, 235, 0.95);
     -unity-text-align: middle-center;
     margin-bottom: 28px;
+    margin-top: 8px;
 }
 
 .slider-row { margin-bottom: 20px; }
@@ -271,16 +263,17 @@
 }
 
 .slider-label {
-    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.asset");
     font-size: 10px;
     letter-spacing: 2px;
-    color: rgba(90, 110, 130, 0.90);
+    color: rgba(120, 145, 170, 0.85);
 }
 
 .slider-value {
-    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.asset");
     font-size: 10px;
-    color: #e8a030;
+    letter-spacing: 1px;
+    color: rgba(232, 160, 48, 0.90);
 }
 
 .bbl-slider { height: 24px; }
@@ -322,24 +315,46 @@
     margin-bottom: 4px;
 }
 
-.btn-save {
-    width: 220px;
-    font-size: 13px;
-    letter-spacing: 4px;
+.btn-save-sm {
+    width: 160px;
+    font-size: 11px;
+    letter-spacing: 3px;
+}
+
+.settings-close-x {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(60, 80, 100, 0.18);
+    color: rgba(140, 170, 200, 0.65);
+    border-width: 1px;
+    border-color: rgba(80, 110, 140, 0.25);
+    font-size: 14px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    -unity-text-align: middle-center;
+    cursor: hand;
+    transition-property: background-color, color;
+    transition-duration: 0.2s;
+}
+
+.settings-close-x:hover {
+    background-color: rgba(160, 50, 45, 0.22);
+    color: rgba(220, 100, 90, 0.90);
+    border-color: rgba(180, 60, 55, 0.40);
 }
 
 .lbl-saved {
-    -unity-font: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.ttf");
+    -unity-font-definition: url("project://database/Assets/Game/Fonts/SpaceMono-Regular.asset");
     font-size: 9px;
     letter-spacing: 2px;
     color: rgba(100, 200, 120, 0.80);
     -unity-text-align: middle-center;
     margin-top: 6px;
     height: 14px;
-}
-
-.close-row {
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 4px;
 }
