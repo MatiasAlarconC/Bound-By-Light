@@ -45,7 +45,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding-bottom: 50px;
+    padding-bottom: 80px;
 }
 
 .title-img {
@@ -102,10 +102,10 @@
 
 /* Primary — golden / call-to-action */
 .btn-primary {
-    font-size: 15px;
+    font-size: 13px;
     width: 280px;
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     background-color: rgba(232, 160, 48, 0.08);
     color: #e8a030;
     border-width: 1.5px;
@@ -129,9 +129,9 @@
 /* Secondary — muted blue, used for "continuar" */
 .btn-secondary {
     font-size: 13px;
-    width: 240px;
-    padding-top: 13px;
-    padding-bottom: 13px;
+    width: 280px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     background-color: rgba(60, 90, 120, 0.12);
     color: #7a9ab5;
     border-width: 1.5px;
@@ -151,12 +151,49 @@
     translate: 0 1px;
 }
 
+/* Danger — "nueva partida", muted red */
+.btn-danger {
+    font-size: 13px;
+    width: 280px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background-color: rgba(0, 0, 0, 0);
+    color: rgba(180, 80, 70, 0.65);
+    border-width: 1px;
+    border-color: rgba(160, 60, 55, 0.22);
+}
+
+.btn-danger:hover {
+    background-color: rgba(160, 50, 45, 0.12);
+    color: rgba(220, 100, 90, 0.90);
+    border-color: rgba(200, 70, 65, 0.40);
+    scale: 1.04 1.04;
+}
+
+.btn-danger:active {
+    scale: 0.97 0.97;
+}
+
+/* Confirm state — second click needed to confirm new game */
+.btn-confirm {
+    background-color: rgba(180, 60, 50, 0.18);
+    color: #e87060;
+    border-color: rgba(220, 80, 70, 0.60);
+}
+
+.btn-confirm:hover {
+    background-color: rgba(200, 70, 60, 0.28);
+    color: #ff9080;
+    border-color: rgba(240, 90, 80, 0.85);
+    scale: 1.04 1.04;
+}
+
 /* Tertiary — ghost/text button */
 .btn-tertiary {
-    font-size: 11px;
-    width: 190px;
-    padding-top: 11px;
-    padding-bottom: 11px;
+    font-size: 13px;
+    width: 280px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     background-color: rgba(0, 0, 0, 0);
     color: #4a6070;
     border-width: 1px;

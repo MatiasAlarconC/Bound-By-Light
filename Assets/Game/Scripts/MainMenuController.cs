@@ -11,20 +11,28 @@ public class MainMenuController : MonoBehaviour
     [Header("Audio (opcional)")]
     [SerializeField] private AudioSource musicSource;
 
-    private const string KEY_SAVE_EXISTS  = "SaveExists";
-    private const string KEY_MASTER       = "MasterVolume";
-    private const string KEY_MUSIC        = "MusicVolume";
-    private const string KEY_SFX          = "SFXVolume";
-    private const string KEY_LAST_SCENE   = "LastScene";
+    [Header("Animación Babosa")]
+    [SerializeField] private Sprite[] babosaFrames;
+    [SerializeField] private float babosaFps = 12f;
+
+    private const string KEY_SAVE_EXISTS = "SaveExists";
+    private const string KEY_MASTER      = "MasterVolume";
+    private const string KEY_MUSIC       = "MusicVolume";
+    private const string KEY_SFX         = "SFXVolume";
+    private const string KEY_LAST_SCENE  = "LastScene";
 
     private VisualElement _root;
     private VisualElement _settingsOverlay;
     private VisualElement _angelEl;
-    private Button _btnPlay, _btnContinue, _btnSettings, _btnClose, _btnSave;
+    private VisualElement _slugEl;
+    private Button _btnPlay, _btnContinue, _btnNewGame, _btnSettings, _btnClose, _btnSave;
     private Slider _sMaster, _sMusic, _sSfx;
     private Label _vMaster, _vMusic, _vSfx, _lblSaved;
 
     private float _floatTime;
+    private bool _pendingNewGameConfirm;
+    private int _babosaFrame;
+    private float _babosaTimer;
 
     private void OnEnable()
     {
@@ -32,6 +40,7 @@ public class MainMenuController : MonoBehaviour
 
         _btnPlay     = _root.Q<Button>("btn-play");
         _btnContinue = _root.Q<Button>("btn-continue");
+        _btnNewGame  = _root.Q<Button>("btn-new-game");
         _btnSettings = _root.Q<Button>("btn-settings");
 
         _settingsOverlay = _root.Q<VisualElement>("settings-overlay");
@@ -43,15 +52,22 @@ public class MainMenuController : MonoBehaviour
         _vMusic   = _root.Q<Label>("val-music");
         _vSfx     = _root.Q<Label>("val-sfx");
         _angelEl  = _root.Q<VisualElement>("angel");
+        _slugEl   = _root.Q<VisualElement>("slug");
         _btnSave  = _root.Q<Button>("btn-save-settings");
         _lblSaved = _root.Q<Label>("lbl-saved");
 
         RegisterCallbacks();
         LoadSettings();
-        RefreshContinueButton();
+        RefreshButtons();
     }
 
     private void Update()
+    {
+        AnimateAngel();
+        AnimateBabosa();
+    }
+
+    private void AnimateAngel()
     {
         if (_angelEl == null) return;
         _floatTime += Time.deltaTime;
@@ -59,21 +75,45 @@ public class MainMenuController : MonoBehaviour
         _angelEl.style.translate = new StyleTranslate(new Translate(0, offset, 0));
     }
 
+    private void AnimateBabosa()
+    {
+        if (_slugEl == null || babosaFrames == null || babosaFrames.Length == 0) return;
+        _babosaTimer += Time.deltaTime;
+        if (_babosaTimer < 1f / babosaFps) return;
+        _babosaTimer = 0f;
+        _babosaFrame = (_babosaFrame + 1) % babosaFrames.Length;
+        _slugEl.style.backgroundImage = new StyleBackground(babosaFrames[_babosaFrame]);
+    }
+
     private void RegisterCallbacks()
     {
         _btnPlay.clicked     += OnPlay;
         _btnContinue.clicked += OnContinue;
+        _btnNewGame.clicked  += OnNewGame;
         _btnSettings.clicked += OpenSettings;
         _btnClose.clicked    += CloseSettings;
         _btnSave.clicked     += SaveSettings;
 
-        VisualElement backdrop = _root.Q<VisualElement>("settings-backdrop");
-        if (backdrop != null)
-            backdrop.RegisterCallback<ClickEvent>(_ => CloseSettings());
+        _root.Q<VisualElement>("settings-backdrop")
+            ?.RegisterCallback<ClickEvent>(_ => CloseSettings());
 
         _sMaster.RegisterValueChangedCallback(e => OnVolume(KEY_MASTER, e.newValue, _vMaster));
         _sMusic.RegisterValueChangedCallback(e  => OnVolume(KEY_MUSIC,  e.newValue, _vMusic));
         _sSfx.RegisterValueChangedCallback(e    => OnVolume(KEY_SFX,    e.newValue, _vSfx));
+    }
+
+    private void RefreshButtons()
+    {
+        bool hasSave = PlayerPrefs.GetInt(KEY_SAVE_EXISTS, 0) == 1;
+        SetVisible(_btnPlay,     !hasSave);
+        SetVisible(_btnContinue, hasSave);
+        SetVisible(_btnNewGame,  hasSave);
+    }
+
+    private static void SetVisible(Button btn, bool visible)
+    {
+        if (visible) btn.RemoveFromClassList("hidden");
+        else         btn.AddToClassList("hidden");
     }
 
     private void OnPlay()
@@ -82,6 +122,7 @@ public class MainMenuController : MonoBehaviour
         PlayerPrefs.SetString(KEY_LAST_SCENE, newGameScene);
         PlayerPrefs.DeleteKey("CheckpointX");
         PlayerPrefs.DeleteKey("CheckpointY");
+        PlayerPrefs.DeleteKey("HasExitPos");
         PlayerPrefs.Save();
         SceneManager.LoadScene(newGameScene);
     }
@@ -92,11 +133,33 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene(scene);
     }
 
-    private void RefreshContinueButton()
+    private void OnNewGame()
     {
-        bool hasSave = PlayerPrefs.GetInt(KEY_SAVE_EXISTS, 0) == 1;
-        if (hasSave) _btnContinue.RemoveFromClassList("hidden");
-        else         _btnContinue.AddToClassList("hidden");
+        if (!_pendingNewGameConfirm)
+        {
+            _pendingNewGameConfirm = true;
+            _btnNewGame.text = "¿confirmar?";
+            _btnNewGame.AddToClassList("btn-confirm");
+            _root.schedule.Execute(ResetNewGameButton).StartingIn(3000);
+        }
+        else
+        {
+            PlayerPrefs.DeleteKey(KEY_SAVE_EXISTS);
+            PlayerPrefs.DeleteKey(KEY_LAST_SCENE);
+            PlayerPrefs.DeleteKey("CheckpointX");
+            PlayerPrefs.DeleteKey("CheckpointY");
+            PlayerPrefs.DeleteKey("HasExitPos");
+            PlayerPrefs.Save();
+            SceneManager.LoadScene(newGameScene);
+        }
+    }
+
+    private void ResetNewGameButton()
+    {
+        if (!_pendingNewGameConfirm) return;
+        _pendingNewGameConfirm = false;
+        _btnNewGame.text = "nueva partida";
+        _btnNewGame.RemoveFromClassList("btn-confirm");
     }
 
     private void OpenSettings()  => _settingsOverlay.RemoveFromClassList("hidden");

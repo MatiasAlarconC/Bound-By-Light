@@ -48,17 +48,36 @@ public class GameManager : MonoBehaviour
 
         if (hermanoMenorBabosa != null)
         {
-            string thisScene = SceneManager.GetActiveScene().name;
+            string thisScene  = SceneManager.GetActiveScene().name;
             string savedScene = PlayerPrefs.GetString("LastScene", "");
+            float z = hermanoMenorBabosa.transform.position.z;
+
+            bool hasExitPos = savedScene == thisScene
+                && PlayerPrefs.GetInt("HasExitPos", 0) == 1;
+
             bool hasCheckpoint = savedScene == thisScene
                 && PlayerPrefs.HasKey("CheckpointX")
                 && PlayerPrefs.HasKey("CheckpointY");
 
-            if (hasCheckpoint)
+            if (hasExitPos)
             {
+                // "Continuar" — retomar desde donde se presionó ESC
+                float ex = PlayerPrefs.GetFloat("ExitPosX");
+                float ey = PlayerPrefs.GetFloat("ExitPosY");
+                puntoDeReaparicion = new Vector3(ex, ey, z);
+                hermanoMenorBabosa.transform.position = puntoDeReaparicion;
+                if (hermanoMayorPulpo != null)
+                    hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
+                // Consumir la posición de salida — si el jugador muere, usará el checkpoint
+                PlayerPrefs.DeleteKey("HasExitPos");
+                PlayerPrefs.Save();
+            }
+            else if (hasCheckpoint)
+            {
+                // Respawn normal desde el último checkpoint guardado
                 float cx = PlayerPrefs.GetFloat("CheckpointX");
                 float cy = PlayerPrefs.GetFloat("CheckpointY");
-                puntoDeReaparicion = new Vector3(cx, cy, hermanoMenorBabosa.transform.position.z);
+                puntoDeReaparicion = new Vector3(cx, cy, z);
                 hermanoMenorBabosa.transform.position = puntoDeReaparicion;
                 if (hermanoMayorPulpo != null)
                     hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
