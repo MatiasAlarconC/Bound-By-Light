@@ -3,25 +3,57 @@ using UnityEngine.SceneManagement;
 
 public class ObjetoCheckpoint1 : MonoBehaviour
 {
-    [SerializeField] private bool esElUltimo = false;
-    [SerializeField] private string escenaDestino = "Nivel2";
+    [SerializeField] public bool esElUltimo = false;
+    [SerializeField] public string escenaDestino = "Nivel2";
+    [SerializeField] private float radioDeteccion = 1.5f;
+
+    private bool _activado = false;
+    private Animator _miAnimator;
+
+    private void Start()
+    {
+        _miAnimator = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        if (!esElUltimo || _activado) return;
+
+        // Detectar cualquier collider dentro del radio sin depender de capas de física
+        Collider2D[] cercanos = Physics2D.OverlapCircleAll(transform.position, radioDeteccion);
+        foreach (Collider2D col in cercanos)
+        {
+            if (col.gameObject == gameObject) continue;
+            if (col.CompareTag("Player") || col.CompareTag("Babosa"))
+            {
+                _activado = true;
+                PlayerPrefs.SetString("LastScene", escenaDestino);
+                PlayerPrefs.SetInt("SaveExists", 1);
+                PlayerPrefs.DeleteKey("CheckpointX");
+                PlayerPrefs.DeleteKey("CheckpointY");
+                PlayerPrefs.DeleteKey("HasExitPos");
+                PlayerPrefs.Save();
+                SceneManager.LoadScene(escenaDestino);
+                return;
+            }
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player"))
-            return;
+        if (esElUltimo || _activado) return;
+        if (!other.CompareTag("Player") && !other.CompareTag("Babosa")) return;
 
-        if (esElUltimo)
-        {
-            SceneManager.LoadScene(escenaDestino);
-            return;
-        }
-
+        _activado = true;
         GameManager elCerebro = FindFirstObjectByType<GameManager>();
         if (elCerebro != null)
-        {
-            Animator miAnimator = GetComponent<Animator>();
-            elCerebro.GuardarNuevoCheckpoint(transform.position, miAnimator);
-        }
+            elCerebro.GuardarNuevoCheckpoint(transform.position, _miAnimator);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!esElUltimo) return;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, radioDeteccion);
     }
 }

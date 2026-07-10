@@ -19,9 +19,10 @@
             </ui:VisualElement>
 
             <ui:VisualElement name="button-stack" class="button-stack">
-                <ui:Button text="jugar ahora"   name="btn-play"     class="menu-btn btn-primary" />
-                <ui:Button text="continuar"      name="btn-continue" class="menu-btn btn-secondary" />
-                <ui:Button text="configuración"  name="btn-settings" class="menu-btn btn-tertiary" />
+                <ui:Button text="jugar ahora"    name="btn-play"      class="menu-btn btn-primary" />
+                <ui:Button text="continuar"       name="btn-continue"  class="menu-btn btn-primary" />
+                <ui:Button text="nueva partida"   name="btn-new-game"  class="menu-btn btn-danger" />
+                <ui:Button text="configuración"   name="btn-settings"  class="menu-btn btn-tertiary" />
             </ui:VisualElement>
         </ui:VisualElement>
 

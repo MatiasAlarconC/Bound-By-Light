@@ -579,6 +579,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 0
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &92362817
 GameObject:
   m_ObjectHideFlags: 0
@@ -2374,6 +2375,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 0
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &243462238
 GameObject:
   m_ObjectHideFlags: 0
@@ -3335,6 +3337,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 0
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &347179851
 GameObject:
   m_ObjectHideFlags: 0
@@ -4071,6 +4074,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 0
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &407002684
 GameObject:
   m_ObjectHideFlags: 0
@@ -4250,6 +4254,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 0
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &429241794
 GameObject:
   m_ObjectHideFlags: 0
@@ -5943,7 +5948,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4209461767521648114, guid: fe8388f8d0b697e4184a88b1be136623, type: 3}
+  m_Sprite: {fileID: -1792632809057475342, guid: 49713d63d6e234eaba8b7aec3a3ba1fc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7569,6 +7574,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 1
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &911894154
 GameObject:
   m_ObjectHideFlags: 0
@@ -82874,6 +82880,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 0
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &1739926505
 GameObject:
   m_ObjectHideFlags: 0
@@ -84094,7 +84101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HUDControlador
   iconoPersonajeActual: {fileID: 631607765}
   textoPersonajeActual: {fileID: 676754019}
-  fotoBabosa: {fileID: -4209461767521648114, guid: fe8388f8d0b697e4184a88b1be136623, type: 3}
+  fotoBabosa: {fileID: -4209461767521648114, guid: 70496e3f52d158e41930f5aecaa29368, type: 3}
   fotoPulpo: {fileID: -4209461767521648114, guid: a0a192523630fa649913be135d325ba0, type: 3}
 --- !u!114 &1969046114
 MonoBehaviour:
@@ -85651,6 +85658,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 0
   escenaDestino: Nivel2
+  radioDeteccion: 1.5
 --- !u!1 &2112681526
 GameObject:
   m_ObjectHideFlags: 0
