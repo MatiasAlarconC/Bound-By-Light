@@ -33,6 +33,8 @@
             <ui:VisualElement name="settings-backdrop" class="settings-backdrop" />
             <ui:VisualElement name="settings-card" class="settings-card">
 
+                <ui:Button text="✕" name="btn-close-settings" class="settings-close-x" />
+
                 <ui:Label text="Configuración" class="settings-title" />
 
                 <ui:VisualElement class="slider-row">
@@ -62,12 +64,8 @@
                 <ui:VisualElement class="divider" />
 
                 <ui:VisualElement class="save-row">
-                    <ui:Button text="guardar" name="btn-save-settings" class="menu-btn btn-primary btn-save" />
+                    <ui:Button text="cerrar" name="btn-save-settings" class="menu-btn btn-primary btn-save-sm" />
                     <ui:Label text="" name="lbl-saved" class="lbl-saved" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="close-row">
-                    <ui:Button text="cerrar" name="btn-close-settings" class="menu-btn btn-tertiary" />
                 </ui:VisualElement>
 
             </ui:VisualElement>
