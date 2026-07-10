@@ -7,7 +7,7 @@ public class DetectorColisiones : MonoBehaviour
     void Start()
     {
         // Buscamos el GameManager automáticamente en la escena al iniciar
-        gameManager = Object.FindFirstObjectByType<GameManager>(); // En versiones antiguas de Unity usa: FindObjectOfType<GameManager>();
+        gameManager = Object.FindFirstObjectByType<GameManager>();
     }
 
     // Se ejecuta cuando el personaje entra en un objeto que es "Is Trigger"
@@ -18,6 +18,17 @@ public class DetectorColisiones : MonoBehaviour
         // 1. Si chocamos con la burbuja checkpoint
         if (collision.CompareTag("Checkpoint"))
         {
+            // === FILTRO ABSOLUTO SEGÚN EL PERSONAJE ===
+            // Le preguntamos a este objeto exacto: "¿Tu etiqueta de personaje es 'Player' (Babosa)?"
+            // Si NO somos la babosa (ej: somos el Ángel con etiqueta Pulpo), cancelamos la colisión inmediatamente
+            if (!gameObject.CompareTag("Player"))
+            {
+                Debug.Log("<color=orange>¡DetectorColisiones: El Ángel de Mar tocó el checkpoint pero fue rechazado!</color>");
+                return; 
+            }
+
+            // Si el código continúa aquí abajo, es porque SÍ somos la Babosa ("Player"):
+            
             // Le enviamos la posición de la burbuja al GameManager para que la guarde
             gameManager.GuardarNuevoCheckpoint(collision.transform.position);
 
@@ -25,6 +36,7 @@ public class DetectorColisiones : MonoBehaviour
             Animator animBurbuja = collision.GetComponent<Animator>();
             if (animBurbuja != null)
             {
+                // Usamos tu lógica original por nombre de animación
                 animBurbuja.Play("Burbuja_Explotar");
             }
 
@@ -32,7 +44,7 @@ public class DetectorColisiones : MonoBehaviour
             collision.enabled = false;
         }
 
-        // 2. Si chocamos con pinchos o vacío
+        // 2. Si chocamos con pinchos o vacío (Esto lo siguen haciendo ambos personajes)
         if (collision.CompareTag("DeadZone"))
         {
             // Le ordenamos al GameManager que active la reaparición doble

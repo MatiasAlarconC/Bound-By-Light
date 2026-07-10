@@ -1,0 +1,145 @@
+using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
+
+[RequireComponent(typeof(UIDocument))]
+public class MainMenuController : MonoBehaviour
+{
+    [Header("Escenas")]
+    [SerializeField] private string newGameScene = "MecanicaPulpo";
+
+    [Header("Audio (opcional)")]
+    [SerializeField] private AudioSource musicSource;
+
+    private const string KEY_SAVE_EXISTS  = "SaveExists";
+    private const string KEY_MASTER       = "MasterVolume";
+    private const string KEY_MUSIC        = "MusicVolume";
+    private const string KEY_SFX          = "SFXVolume";
+    private const string KEY_LAST_SCENE   = "LastScene";
+
+    private VisualElement _root;
+    private VisualElement _settingsOverlay;
+    private VisualElement _angelEl;
+    private Button _btnPlay, _btnContinue, _btnSettings, _btnClose, _btnSave;
+    private Slider _sMaster, _sMusic, _sSfx;
+    private Label _vMaster, _vMusic, _vSfx, _lblSaved;
+
+    private float _floatTime;
+
+    private void OnEnable()
+    {
+        _root = GetComponent<UIDocument>().rootVisualElement;
+
+        _btnPlay     = _root.Q<Button>("btn-play");
+        _btnContinue = _root.Q<Button>("btn-continue");
+        _btnSettings = _root.Q<Button>("btn-settings");
+
+        _settingsOverlay = _root.Q<VisualElement>("settings-overlay");
+        _btnClose = _root.Q<Button>("btn-close-settings");
+        _sMaster  = _root.Q<Slider>("slider-master");
+        _sMusic   = _root.Q<Slider>("slider-music");
+        _sSfx     = _root.Q<Slider>("slider-sfx");
+        _vMaster  = _root.Q<Label>("val-master");
+        _vMusic   = _root.Q<Label>("val-music");
+        _vSfx     = _root.Q<Label>("val-sfx");
+        _angelEl  = _root.Q<VisualElement>("angel");
+        _btnSave  = _root.Q<Button>("btn-save-settings");
+        _lblSaved = _root.Q<Label>("lbl-saved");
+
+        RegisterCallbacks();
+        LoadSettings();
+        RefreshContinueButton();
+    }
+
+    private void Update()
+    {
+        if (_angelEl == null) return;
+        _floatTime += Time.deltaTime;
+        float offset = Mathf.Sin(_floatTime * 1.1f) * 10f;
+        _angelEl.style.translate = new StyleTranslate(new Translate(0, offset, 0));
+    }
+
+    private void RegisterCallbacks()
+    {
+        _btnPlay.clicked     += OnPlay;
+        _btnContinue.clicked += OnContinue;
+        _btnSettings.clicked += OpenSettings;
+        _btnClose.clicked    += CloseSettings;
+        _btnSave.clicked     += SaveSettings;
+
+        VisualElement backdrop = _root.Q<VisualElement>("settings-backdrop");
+        if (backdrop != null)
+            backdrop.RegisterCallback<ClickEvent>(_ => CloseSettings());
+
+        _sMaster.RegisterValueChangedCallback(e => OnVolume(KEY_MASTER, e.newValue, _vMaster));
+        _sMusic.RegisterValueChangedCallback(e  => OnVolume(KEY_MUSIC,  e.newValue, _vMusic));
+        _sSfx.RegisterValueChangedCallback(e    => OnVolume(KEY_SFX,    e.newValue, _vSfx));
+    }
+
+    private void OnPlay()
+    {
+        PlayerPrefs.SetInt(KEY_SAVE_EXISTS, 1);
+        PlayerPrefs.SetString(KEY_LAST_SCENE, newGameScene);
+        PlayerPrefs.DeleteKey("CheckpointX");
+        PlayerPrefs.DeleteKey("CheckpointY");
+        PlayerPrefs.Save();
+        SceneManager.LoadScene(newGameScene);
+    }
+
+    private void OnContinue()
+    {
+        string scene = PlayerPrefs.GetString(KEY_LAST_SCENE, newGameScene);
+        SceneManager.LoadScene(scene);
+    }
+
+    private void RefreshContinueButton()
+    {
+        bool hasSave = PlayerPrefs.GetInt(KEY_SAVE_EXISTS, 0) == 1;
+        if (hasSave) _btnContinue.RemoveFromClassList("hidden");
+        else         _btnContinue.AddToClassList("hidden");
+    }
+
+    private void OpenSettings()  => _settingsOverlay.RemoveFromClassList("hidden");
+    private void CloseSettings() => _settingsOverlay.AddToClassList("hidden");
+
+    private void SaveSettings()
+    {
+        PlayerPrefs.Save();
+        ApplyVolumes();
+        if (_lblSaved == null) return;
+        _lblSaved.text = "✓ cambios guardados";
+        var lbl = _lblSaved;
+        _root.schedule.Execute(() => lbl.text = "").StartingIn(2000);
+    }
+
+    private void OnVolume(string key, float value, Label lbl)
+    {
+        lbl.text = Mathf.RoundToInt(value) + "%";
+        PlayerPrefs.SetFloat(key, value);
+        PlayerPrefs.Save();
+        ApplyVolumes();
+    }
+
+    private void ApplyVolumes()
+    {
+        float master = PlayerPrefs.GetFloat(KEY_MASTER, 80f) / 100f;
+        float music  = PlayerPrefs.GetFloat(KEY_MUSIC,  70f) / 100f;
+        if (musicSource != null) musicSource.volume = master * music;
+    }
+
+    private void LoadSettings()
+    {
+        float master = PlayerPrefs.GetFloat(KEY_MASTER, 80f);
+        float music  = PlayerPrefs.GetFloat(KEY_MUSIC,  70f);
+        float sfx    = PlayerPrefs.GetFloat(KEY_SFX,    60f);
+
+        _sMaster.SetValueWithoutNotify(master);
+        _sMusic.SetValueWithoutNotify(music);
+        _sSfx.SetValueWithoutNotify(sfx);
+        _vMaster.text = Mathf.RoundToInt(master) + "%";
+        _vMusic.text  = Mathf.RoundToInt(music)  + "%";
+        _vSfx.text    = Mathf.RoundToInt(sfx)    + "%";
+
+        ApplyVolumes();
+    }
+}
