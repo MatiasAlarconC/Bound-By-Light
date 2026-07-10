@@ -169,7 +169,10 @@ public class MainMenuController : MonoBehaviour
     {
         PlayerPrefs.Save();
         ApplyVolumes();
-        CloseSettings();
+        if (_lblSaved == null) return;
+        _lblSaved.text = "✓ guardado";
+        var lbl = _lblSaved;
+        _root.schedule.Execute(() => lbl.text = "").StartingIn(2000);
     }
 
     private void OnVolume(string key, float value, Label lbl)
