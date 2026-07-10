@@ -64,7 +64,7 @@
                 <ui:VisualElement class="divider" />
 
                 <ui:VisualElement class="save-row">
-                    <ui:Button text="cerrar" name="btn-save-settings" class="menu-btn btn-primary btn-save-sm" />
+                    <ui:Button text="guardar" name="btn-save-settings" class="menu-btn btn-primary btn-save-sm" />
                     <ui:Label text="" name="lbl-saved" class="lbl-saved" />
                 </ui:VisualElement>
 
