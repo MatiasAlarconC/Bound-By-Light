@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e54b5e040638f46d5a29d64bbcfe4f40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
-  newGameScene: MecanicaPulpo
+  newGameScene: Escena_Cinematica
   musicSource: {fileID: 0}
   babosaFrames:
   - {fileID: -4209461767521648114, guid: c35a56295d8da4d1caf4d47dcbe5adaa, type: 3}
