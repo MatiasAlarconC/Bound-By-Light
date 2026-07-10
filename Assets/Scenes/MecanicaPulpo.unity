@@ -646,7 +646,7 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7185555284634750484, guid: dac4853664fcb7b4d80e38e93b99a669, type: 3}
+  m_Sprite: {fileID: -2372714005652388919, guid: 74f082390ab413e489c3479e5273f534, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1748,7 +1748,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5680924823079432935, guid: 33ebd674d2147da4a9dee62b5044074b, type: 3}
+  m_Sprite: {fileID: -370841308118778621, guid: 7b83c4026c669ab408575b30b992b25e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -7573,7 +7573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjetoCheckpoint1
   esElUltimo: 1
-  escenaDestino: Nivel2
+  escenaDestino: Escena_Cinematica2
   radioDeteccion: 1.5
 --- !u!1 &911894154
 GameObject:
@@ -9737,6 +9737,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: dd8d9fba4227a9b46be31452d3c2fa5a, type: 3}
   sonidoEnganchePersonajes: {fileID: 8300000, guid: a1d674483f42c774fa59b8e2602ce2f1, type: 3}
   sonidoCheckpoint: {fileID: 8300000, guid: ab11f2f99e2fbf14298d7c19295cdba1, type: 3}
+  trianguloIndicadorBabosa: {fileID: 0}
+  trianguloIndicadorPulpo: {fileID: 0}
   cartelTeclasBabosa: {fileID: 1896027583}
   cartelTeclasPulpo: {fileID: 92362817}
 --- !u!1 &1132378230
@@ -83813,7 +83815,7 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1115504222156042664, guid: 6529b254e672035418c59d8af8737400, type: 3}
+  m_Sprite: {fileID: 5141196100482363554, guid: 8488458f78360fc4c98c67760b006b15, type: 3}
   m_Color: {r: 0.78867924, g: 0.78867924, b: 0.78867924, a: 1}
   m_FlipX: 0
   m_FlipY: 0
