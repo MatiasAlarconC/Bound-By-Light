@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01902c3a5baeee6478ea3f71bc0ec2b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CargadorPorVideo
-  nombreEscenaGameplay: MecanicaPulpo
+  nombreEscenaGameplay: Nivel2
 --- !u!328 &1467609415
 VideoPlayer:
   m_ObjectHideFlags: 0

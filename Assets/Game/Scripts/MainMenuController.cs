@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class MainMenuController : MonoBehaviour
 {
     [Header("Escenas")]
-    [SerializeField] private string newGameScene = "MecanicaPulpo";
+    [SerializeField] private string newGameScene = "Escena_Cinematica";
 
     [Header("Audio (opcional)")]
     [SerializeField] private AudioSource musicSource;
