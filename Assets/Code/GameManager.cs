@@ -12,17 +12,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private KeyCode teclaCambio = KeyCode.C;
 
     [Header("Interfaz de Usuario (HUD)")]
-    [SerializeField] private HUDControlador hudUI; 
+    [SerializeField] private HUDControlador hudUI;
 
     [Header("Cerebro de Cinemachine")]
-    [SerializeField] private CinemachineBrain cerebroCinemachine; 
+    [SerializeField] private CinemachineBrain cerebroCinemachine;
 
     [Header("Efectos de Sonido (SFX)")]
     [Tooltip("Arrastra aquí todos los sonidos de muerte de la Babosa")]
-    [SerializeField] private AudioClip[] sonidosMuerteBabosa; // Añadido []
+    [SerializeField] private AudioClip[] sonidosMuerteBabosa;
 
     [Tooltip("Arrastra aquí todos los sonidos de muerte del Pulpo")]
-    [SerializeField] private AudioClip[] sonidosMuertePulpo; // Añadido []
+    [SerializeField] private AudioClip[] sonidosMuertePulpo;
 
     [Tooltip("Arrastra aquí el sonido de enganche entre la Babosa y el Pulpo")]
     [SerializeField] private AudioClip sonidoEnganchePersonajes;
@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     private Vector3 puntoDeReaparicion;
     private bool controlandoAlPulpo = false;
     private float tiempoSiguienteMuerte = 0f;
+    private float _switchCooldown = 0f;
 
     void Start()
     {
@@ -61,20 +62,17 @@ public class GameManager : MonoBehaviour
 
             if (hasExitPos)
             {
-                // "Continuar" — retomar desde donde se presionó ESC
                 float ex = PlayerPrefs.GetFloat("ExitPosX");
                 float ey = PlayerPrefs.GetFloat("ExitPosY");
                 puntoDeReaparicion = new Vector3(ex, ey, z);
                 hermanoMenorBabosa.transform.position = puntoDeReaparicion;
                 if (hermanoMayorPulpo != null)
                     hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
-                // Consumir la posición de salida — si el jugador muere, usará el checkpoint
                 PlayerPrefs.DeleteKey("HasExitPos");
                 PlayerPrefs.Save();
             }
             else if (hasCheckpoint)
             {
-                // Respawn normal desde el último checkpoint guardado
                 float cx = PlayerPrefs.GetFloat("CheckpointX");
                 float cy = PlayerPrefs.GetFloat("CheckpointY");
                 puntoDeReaparicion = new Vector3(cx, cy, z);
@@ -86,6 +84,10 @@ public class GameManager : MonoBehaviour
             {
                 puntoDeReaparicion = hermanoMenorBabosa.transform.position;
             }
+
+            // Siempre limpiamos velocidad al cargar escena para evitar el boost
+            hermanoMenorBabosa.ResetearEstado();
+            if (hermanoMayorPulpo != null) hermanoMayorPulpo.ResetearEstado();
         }
 
         miLectorDeAudio = GetComponent<AudioSource>();
@@ -94,13 +96,15 @@ public class GameManager : MonoBehaviour
             miLectorDeAudio = gameObject.AddComponent<AudioSource>();
         }
 
-        ActivarCartelUI(false); 
+        ActivarCartelUI(false);
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(teclaCambio) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        if (Time.time > _switchCooldown &&
+            (Input.GetKeyDown(teclaCambio) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)))
         {
+            _switchCooldown = Time.time + 0.15f;
             controlandoAlPulpo = !controlandoAlPulpo;
             ActualizarControlesEstrictos();
             ActualizarCuartoActual();
@@ -112,16 +116,28 @@ public class GameManager : MonoBehaviour
     {
         if (controlandoAlPulpo)
         {
-            if (hermanoMayorPulpo != null) hermanoMayorPulpo.SetControlActivo(true);
             if (hermanoMenorBabosa != null) hermanoMenorBabosa.SetControlActivo(false);
+            if (hermanoMayorPulpo != null)
+            {
+                hermanoMayorPulpo.SetControlActivo(true);
+                hermanoMayorPulpo.BloquearInput(0.12f);
+            }
             Debug.Log("<color=cyan>--- CONTROL: PULPO ACTIVO ---</color>");
         }
         else
         {
             if (hermanoMayorPulpo != null) hermanoMayorPulpo.SetControlActivo(false);
-            if (hermanoMenorBabosa != null) hermanoMenorBabosa.SetControlActivo(true);
+            if (hermanoMenorBabosa != null)
+            {
+                hermanoMenorBabosa.SetControlActivo(true);
+                hermanoMenorBabosa.BloquearInput(0.12f);
+            }
             Debug.Log("<color=green>--- CONTROL: BABOSA ACTIVA ---</color>");
         }
+
+        // Actualizar outline en ambos personajes
+        if (hermanoMenorBabosa != null) hermanoMenorBabosa.SetOutlineActivo(!controlandoAlPulpo);
+        if (hermanoMayorPulpo != null) hermanoMayorPulpo.SetOutlineActivo(controlandoAlPulpo);
 
         if (hudUI != null)
         {
@@ -133,8 +149,8 @@ public class GameManager : MonoBehaviour
 
     void ActualizarCuartoActual()
     {
-        Vector2 posicionPersonajeActual = controlandoAlPulpo ? 
-            (Vector2)hermanoMayorPulpo.transform.position : 
+        Vector2 posicionPersonajeActual = controlandoAlPulpo ?
+            (Vector2)hermanoMayorPulpo.transform.position :
             (Vector2)hermanoMenorBabosa.transform.position;
 
         Room[] todosLosCuartos = FindObjectsByType<Room>(FindObjectsSortMode.None);
@@ -153,7 +169,7 @@ public class GameManager : MonoBehaviour
             {
                 cuartoActual.ActivarCamaraManualmente();
                 cuartoEncontrado = true;
-                break; 
+                break;
             }
         }
 
@@ -177,7 +193,7 @@ public class GameManager : MonoBehaviour
         {
             ICinemachineCamera camaraGenerica = cerebroCinemachine.ActiveVirtualCamera;
             CinemachineCamera camaraActiva = camaraGenerica as CinemachineCamera;
-            
+
             if (camaraActiva != null)
             {
                 camaraActiva.ForceCameraPosition(camaraActiva.State.RawPosition, camaraActiva.State.RawOrientation);
@@ -193,19 +209,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ====================================================================
-    // FUNCIÓN DE CHECKPOINT SEGURA CON ANIMACIÓN DIRECTA
-    // ====================================================================
     public void GuardarNuevoCheckpoint(Vector3 nuevaPosicion, Animator animatorDelCheckpoint = null)
     {
-        // 1. Si se controla al pulpo, se rechaza inmediatamente antes de hacer nada mas
         if (controlandoAlPulpo)
         {
             Debug.Log("<color=orange>¡Checkpoint ignorado! El Pulpo no puede activarlo.</color>");
             return;
         }
 
-        // 2. Si es la babosa, guardamos y reproducimos audio/animación
         if (puntoDeReaparicion != nuevaPosicion)
         {
             puntoDeReaparicion = nuevaPosicion;
@@ -213,14 +224,12 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetFloat("CheckpointY", nuevaPosicion.y);
             PlayerPrefs.Save();
 
-            // Reproducir sonido de guardado
             if (miLectorDeAudio != null && sonidoCheckpoint != null)
             {
                 miLectorDeAudio.PlayOneShot(sonidoCheckpoint);
                 Debug.Log("<color=yellow>¡Checkpoint guardado y SFX reproducido!</color>");
             }
 
-            // Encendemos el parámetro "activado" directamente si nos mandaron un animator
             if (animatorDelCheckpoint != null)
             {
                 animatorDelCheckpoint.SetBool("activado", true);
@@ -231,48 +240,47 @@ public class GameManager : MonoBehaviour
 
     public void MuerteYRespawnCooperativo()
     {
-        // 1. Candado de tiempo: Si intentan morir dos veces seguidas en menos de 0.4 segundos, ignoramos la segunda
         if (Time.time < tiempoSiguienteMuerte)
         {
             return;
         }
 
-        // Activamos el candado para los próximos 0.4 segundos
         tiempoSiguienteMuerte = Time.time + 0.4f;
 
         Debug.Log("<color=red>¡Muerte detectada! Reproduciendo sonido aleatorio y reapareciendo...</color>");
 
         if (miLectorDeAudio != null)
         {
-            // SI MUERE EL PULPO:
             if (controlandoAlPulpo && sonidosMuertePulpo != null && sonidosMuertePulpo.Length > 0)
             {
-                // Elegimos un índice al azar de la lista del pulpo
                 int indiceAleatorio = Random.Range(0, sonidosMuertePulpo.Length);
                 miLectorDeAudio.PlayOneShot(sonidosMuertePulpo[indiceAleatorio]);
             }
-            // SI MUERE LA BABOSA:
             else if (!controlandoAlPulpo && sonidosMuerteBabosa != null && sonidosMuerteBabosa.Length > 0)
             {
-                // Elegimos un índice al azar de la lista de la babosa
                 int indiceAleatorio = Random.Range(0, sonidosMuerteBabosa.Length);
                 miLectorDeAudio.PlayOneShot(sonidosMuerteBabosa[indiceAleatorio]);
             }
         }
 
-        // Tu lógica original de posicionamiento y cámara se mantiene idéntica:
-        if (hermanoMenorBabosa != null) hermanoMenorBabosa.transform.position = puntoDeReaparicion;
-        if (hermanoMayorPulpo != null) hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
-        
-        FrenarRigidbody(hermanoMenorBabosa.gameObject);
-        FrenarRigidbody(hermanoMayorPulpo.gameObject);
+        if (hermanoMenorBabosa != null)
+        {
+            hermanoMenorBabosa.transform.position = puntoDeReaparicion;
+            hermanoMenorBabosa.ResetearEstado();
+        }
+        if (hermanoMayorPulpo != null)
+        {
+            hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
+            hermanoMayorPulpo.ResetearEstado();
+        }
+
         ForzarSaltoDeCamara();
     }
 
     private void FrenarRigidbody(GameObject objeto)
     {
         Rigidbody2D rb = objeto.GetComponent<Rigidbody2D>();
-        if (rb != null) rb.linearVelocity = Vector2.zero; 
+        if (rb != null) rb.linearVelocity = Vector2.zero;
     }
 
     private void ActivarCartelUI(bool esPulpo)
