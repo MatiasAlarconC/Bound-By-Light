@@ -31,7 +31,7 @@ public class HUDControlador : MonoBehaviour
         // Tamaño del icono proporcional a la pantalla (8% del lado menor)
         if (iconoPersonajeActual != null)
         {
-            float size = Mathf.Min(Screen.width, Screen.height) * 0.08f;
+            float size = Mathf.Min(Screen.width, Screen.height) * 0.14f;
             iconoPersonajeActual.rectTransform.sizeDelta = new Vector2(size, size);
         }
     }
