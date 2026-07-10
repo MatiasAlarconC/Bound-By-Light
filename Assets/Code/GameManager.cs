@@ -44,6 +44,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (hudUI == null)
+            hudUI = FindFirstObjectByType<HUDControlador>();
+
         controlandoAlPulpo = false;
         ActualizarControlesEstrictos();
 
