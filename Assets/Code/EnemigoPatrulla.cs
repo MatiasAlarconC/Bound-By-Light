@@ -16,7 +16,7 @@ public class EnemigoPatrulla : MonoBehaviour
     {
         if (puntoA == null || puntoB == null)
         {
-            Debug.LogError("Faltan asignar PuntoA o PuntoB en " + gameObject.name);
+            Debug.LogWarning("EnemigoPatrulla: PuntoA o PuntoB sin asignar en " + gameObject.name + " — el enemigo no patrullará.");
             enabled = false;
             return;
         }

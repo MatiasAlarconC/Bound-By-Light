@@ -28,3 +28,6 @@ Thumbs.db
 
 # User-specific
 UserSettings/
+
+# Node / asset exporter
+node_modules/

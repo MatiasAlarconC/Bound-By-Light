@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DetectorColisiones : MonoBehaviour
 {
@@ -6,36 +7,47 @@ public class DetectorColisiones : MonoBehaviour
 
     void Start()
     {
-        // Buscamos el GameManager automáticamente en la escena al iniciar
-        gameManager = Object.FindFirstObjectByType<GameManager>(); // En versiones antiguas de Unity usa: FindObjectOfType<GameManager>();
+        gameManager = Object.FindFirstObjectByType<GameManager>();
     }
 
-    // Se ejecuta cuando el personaje entra en un objeto que es "Is Trigger"
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (gameManager == null) return;
 
-        // 1. Si chocamos con la burbuja checkpoint
+        // 1. Checkpoint
         if (collision.CompareTag("Checkpoint"))
         {
-            // Le enviamos la posición de la burbuja al GameManager para que la guarde
-            gameManager.GuardarNuevoCheckpoint(collision.transform.position);
+            if (!gameObject.CompareTag("Player"))
+                return;
 
-            // Buscamos la animación de la burbuja y la hacemos explotar
-            Animator animBurbuja = collision.GetComponent<Animator>();
-            if (animBurbuja != null)
+            ObjetoCheckpoint1 datos = collision.GetComponent<ObjetoCheckpoint1>();
+
+            if (datos != null && datos.esElUltimo)
             {
-                animBurbuja.Play("Burbuja_Explotar");
+                // Último checkpoint — ir al siguiente nivel
+                PlayerPrefs.SetString("LastScene", datos.escenaDestino);
+                PlayerPrefs.SetInt("SaveExists", 1);
+                PlayerPrefs.DeleteKey("CheckpointX");
+                PlayerPrefs.DeleteKey("CheckpointY");
+                PlayerPrefs.DeleteKey("HasExitPos");
+                PlayerPrefs.Save();
+                SceneManager.LoadScene(datos.escenaDestino);
+                return;
             }
 
-            // Desactivamos el colisionador de la burbuja para que no vuelva a procesarse
+            // Checkpoint normal — guardar posición
+            gameManager.GuardarNuevoCheckpoint(collision.transform.position);
+
+            Animator animBurbuja = collision.GetComponent<Animator>();
+            if (animBurbuja != null)
+                animBurbuja.Play("Burbuja_Explotar");
+
             collision.enabled = false;
         }
 
-        // 2. Si chocamos con pinchos o vacío
+        // 2. Zona de muerte
         if (collision.CompareTag("DeadZone"))
         {
-            // Le ordenamos al GameManager que active la reaparición doble
             gameManager.MuerteYRespawnCooperativo();
         }
     }

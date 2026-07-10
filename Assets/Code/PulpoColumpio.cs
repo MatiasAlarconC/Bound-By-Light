@@ -6,22 +6,37 @@ public class PulpoColumpio : MonoBehaviour
     [Header("Movimiento")]
     [SerializeField] private float velocidadSuelo = 8f;
     [SerializeField] private float velocidadTecho = 6f;
-    [SerializeField] private float fuerzaSalto = 18f; 
+    [SerializeField] private float fuerzaSalto = 18f;
+
+    [Header("Control de Salto (Suelo)")]
+    [Tooltip("Selecciona la capa (Layer) que representa el suelo de tu juego")]
+    [SerializeField] private LayerMask capaSuelo;
 
     [Header("Configuración del Tentáculo (Automático)")]
-    [SerializeField] private string tagDeLaBabosa = "Player"; 
-    [SerializeField] private int numeroDeEslabones = 5;    
-    [SerializeField] private float longitudMaximaTentaculo = 12f; 
-    
+    [SerializeField] private string tagDeLaBabosa = "Player";
+    [Tooltip("Distancia ideal entre cada pedazo de tentáculo (ej: 1.5 unidades por eslabón)")]
+    [SerializeField] private float distanciaPorEslabon = 1.2f;
+    [SerializeField] private float longitudMaximaTentaculo = 25f;
+
     [Header("Ajuste de Altura")]
     [Tooltip("Cuánto más abajo de la babosa quieres que baje el tentáculo para asegurar el enganche")]
-    [SerializeField] private float margenExtraBajar = 0.8f; 
+    [SerializeField] private float margenExtraBajar = 0.8f;
+
+    [Header("Efectos de Sonido del Tentáculo")]
+    [Tooltip("Arrastra aquí los diferentes clips de sonido que sonarán al engancharse")]
+    [SerializeField] private AudioClip[] sonidosEngancheTecho;
+
+    [Tooltip("Arrastra aquí los diferentes clips de sonido para el salto del pulpo")]
+    [SerializeField] private AudioClip[] sonidosSaltoPulpo;
+    private AudioSource miLectorDeAudio;
 
     private Rigidbody2D rbPulpo;
     private Collider2D colliderPulpo;
     private LineRenderer lineaVisual;
-    private Animator animatorPulpo; 
+    private Animator animatorPulpo;
+    private SpriteRenderer spritePulpo;
     private PilarRuta pilarActual;
+    private Collider2D colliderDelCuadradoOculto;
 
     private List<GameObject> eslabones = new List<GameObject>();
     private GameObject puntaTentaculo;
@@ -29,72 +44,124 @@ public class PulpoColumpio : MonoBehaviour
     private bool pegadoAlTecho = false;
     private float tiempoSiguienteEnganche = 0f;
     private bool estaControlado = false;
-
-    // VARIABLE NUEVA: Para recordar hacia dónde miraba originalmente
     private bool mirandoDerecha = true;
+
+    private int saltosDisponibles = 1;
+    private float _inputCooldown;
+    private SpriteRenderer _outlineRenderer;
 
     void Awake()
     {
         rbPulpo = GetComponent<Rigidbody2D>();
         colliderPulpo = GetComponent<Collider2D>();
         lineaVisual = GetComponent<LineRenderer>();
-        animatorPulpo = GetComponent<Animator>(); 
+        animatorPulpo = GetComponent<Animator>();
+        spritePulpo = GetComponent<SpriteRenderer>();
+
+        miLectorDeAudio = GetComponent<AudioSource>();
+        if (miLectorDeAudio == null)
+        {
+            miLectorDeAudio = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     void Start()
     {
-        if (lineaVisual != null) {
+        if (lineaVisual != null)
+        {
             lineaVisual.enabled = false;
-            lineaVisual.useWorldSpace = false; 
+            lineaVisual.useWorldSpace = true;
         }
-        PrepararTentaculoCadena();
 
         rbPulpo.bodyType = RigidbodyType2D.Dynamic;
         rbPulpo.gravityScale = 1f;
         rbPulpo.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // Outline exterior: shader detecta borde y pinta blanco solo fuera del sprite
+        Shader outlineShader = Shader.Find("Custom/SpriteSilhouette");
+        GameObject outlineGO = new GameObject("Outline");
+        outlineGO.transform.SetParent(transform);
+        outlineGO.transform.localPosition = Vector3.zero;
+        outlineGO.transform.localScale = Vector3.one * 1.05f;
+        _outlineRenderer = outlineGO.AddComponent<SpriteRenderer>();
+        if (spritePulpo != null)
+        {
+            _outlineRenderer.sprite = spritePulpo.sprite;
+            _outlineRenderer.sortingLayerName = spritePulpo.sortingLayerName;
+            _outlineRenderer.sortingOrder = spritePulpo.sortingOrder - 1;
+        }
+        if (outlineShader != null)
+        {
+            Material mat = new Material(outlineShader);
+            mat.SetColor("_Color", Color.white);
+            mat.SetFloat("_OutlineSize", 1.5f);
+            _outlineRenderer.material = mat;
+        }
+        _outlineRenderer.enabled = false;
     }
 
     public void SetControlActivo(bool activo)
     {
         estaControlado = activo;
-        if (rbPulpo != null) rbPulpo.WakeUp();
+        if (rbPulpo != null)
+        {
+            if (!activo && !pegadoAlTecho) rbPulpo.linearVelocity = Vector2.zero;
+            rbPulpo.WakeUp();
+        }
     }
 
-    void PrepararTentaculoCadena()
+    public void BloquearInput(float duracion)
     {
-        float distanciaBase = 5f / numeroDeEslabones;
+        _inputCooldown = Time.time + duracion;
+    }
+
+    public void SetOutlineActivo(bool activo)
+    {
+        if (_outlineRenderer != null) _outlineRenderer.enabled = activo;
+    }
+
+    public void ResetearEstado()
+    {
+        if (pegadoAlTecho) SoltarYAvanzar();
+        saltosDisponibles = 1;
+        if (rbPulpo != null) rbPulpo.linearVelocity = Vector2.zero;
+    }
+
+    void GenerarCadenaDinamica(int cantidadEslabones, float distanciaEntreEllos)
+    {
+        DestruirCadenaActual();
+
         Rigidbody2D rbAnterior = rbPulpo;
 
-        for (int i = 0; i < numeroDeEslabones; i++)
+        for (int i = 0; i < cantidadEslabones; i++)
         {
             GameObject eslabon = new GameObject("EslabonTentaculo_" + i);
-            eslabon.transform.SetParent(this.transform); 
+            eslabon.transform.SetParent(this.transform);
             eslabon.layer = LayerMask.NameToLayer("Default");
 
             Rigidbody2D rbEslabon = eslabon.AddComponent<Rigidbody2D>();
-            rbEslabon.angularDamping = 1.2f;  
-            rbEslabon.linearDamping = 0.2f;   
-            rbEslabon.gravityScale = 0.8f;   
+            rbEslabon.angularDamping = 1.2f;
+            rbEslabon.linearDamping = 0.2f;
+            rbEslabon.gravityScale = 0.8f;
 
             HingeJoint2D articulacion = eslabon.AddComponent<HingeJoint2D>();
             articulacion.connectedBody = rbAnterior;
             articulacion.autoConfigureConnectedAnchor = false;
-            
+
             if (i == 0)
                 articulacion.connectedAnchor = Vector2.zero;
             else
-                articulacion.connectedAnchor = new Vector2(0, -distanciaBase);
+                articulacion.connectedAnchor = new Vector2(0, -distanciaEntreEllos);
 
             articulacion.anchor = Vector2.zero;
-            articulacion.useLimits = false; 
 
-            if (i == numeroDeEslabones - 1)
+            if (i == cantidadEslabones - 1)
             {
                 puntaTentaculo = eslabon;
                 CircleCollider2D col = puntaTentaculo.AddComponent<CircleCollider2D>();
-                col.radius = 0.6f; 
+                col.radius = 0.6f;
                 col.isTrigger = true;
-                rbEslabon.gravityScale = 1.2f; 
+                rbEslabon.gravityScale = 1.0f;
             }
 
             eslabon.SetActive(false);
@@ -102,15 +169,32 @@ public class PulpoColumpio : MonoBehaviour
             rbAnterior = rbEslabon;
         }
 
-        if (lineaVisual != null) lineaVisual.positionCount = numeroDeEslabones + 1;
+        if (lineaVisual != null) lineaVisual.positionCount = cantidadEslabones + 1;
+    }
+
+    void DestruirCadenaActual()
+    {
+        foreach (GameObject eslabon in eslabones)
+        {
+            if (eslabon != null) Destroy(eslabon);
+        }
+        eslabones.Clear();
+        puntaTentaculo = null;
     }
 
     void Update()
     {
-        if (!estaControlado) 
+        if (!estaControlado)
         {
             if (pegadoAlTecho) rbPulpo.linearVelocity = Vector2.zero;
-            return; 
+            return;
+        }
+
+        if (Time.time < _inputCooldown) return;
+
+        if (colliderPulpo != null && colliderPulpo.IsTouchingLayers(capaSuelo) && rbPulpo.linearVelocity.y <= 0.1f)
+        {
+            saltosDisponibles = 1;
         }
 
         float inputH = 0f;
@@ -119,59 +203,87 @@ public class PulpoColumpio : MonoBehaviour
 
         if (inputH != 0f || Input.GetButtonDown("Jump")) rbPulpo.WakeUp();
 
-        // ====================================================================
-        // NUEVO: SISTEMA DE VOLTEO (FLIP) AL CAMINAR
-        // ====================================================================
-        if (inputH > 0f && !mirandoDerecha)
-        {
-            VoltearPersonaje();
-        }
-        else if (inputH < 0f && mirandoDerecha)
-        {
-            VoltearPersonaje();
-        }
+        if (inputH > 0f && !mirandoDerecha) VoltearPersonaje();
+        else if (inputH < 0f && mirandoDerecha) VoltearPersonaje();
 
         if (!pegadoAlTecho)
         {
             rbPulpo.linearVelocity = new Vector2(inputH * velocidadSuelo, rbPulpo.linearVelocity.y);
 
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump") && saltosDisponibles > 0)
             {
+                saltosDisponibles = 0;
                 rbPulpo.linearVelocity = new Vector2(rbPulpo.linearVelocity.x, 0f);
                 rbPulpo.AddForce(Vector2.up * fuerzaSalto, ForceMode2D.Impulse);
+
+                if (miLectorDeAudio != null && sonidosSaltoPulpo != null && sonidosSaltoPulpo.Length > 0)
+                {
+                    int indiceAleatorio = Random.Range(0, sonidosSaltoPulpo.Length);
+                    miLectorDeAudio.PlayOneShot(sonidosSaltoPulpo[indiceAleatorio]);
+                    Debug.Log("<color=yellow>¡Pulpo: Sonido de salto aleatorio reproducido!</color>");
+                }
             }
         }
         else
         {
             rbPulpo.linearVelocity = new Vector2(inputH * velocidadTecho, 0f);
 
+            if (colliderDelCuadradoOculto != null)
+            {
+                float limiteIzquierdo = colliderDelCuadradoOculto.bounds.min.x;
+                float limiteDerecho = colliderDelCuadradoOculto.bounds.max.x;
+
+                if (transform.position.x < limiteIzquierdo || transform.position.x > limiteDerecho)
+                {
+                    SoltarYAvanzar();
+                }
+            }
+
             if (Input.GetButtonDown("Jump")) SoltarYAvanzar();
         }
     }
 
-    // FUNCIÓN NUEVA: Invierte la escala en X para que mire al otro lado de forma real
     void VoltearPersonaje()
     {
         mirandoDerecha = !mirandoDerecha;
-        Vector3 escalaEscena = transform.localScale;
-        escalaEscena.x *= -1; // Multiplica por -1 para hacer el efecto espejo
-        transform.localScale = escalaEscena;
+
+        if (spritePulpo != null)
+        {
+            spritePulpo.flipX = !mirandoDerecha;
+        }
+        else
+        {
+            Vector3 escalaEscena = transform.localScale;
+            escalaEscena.x *= -1;
+            transform.localScale = escalaEscena;
+        }
     }
+
+    private Vector3 getEscalaEscena() => transform.localScale;
 
     void LateUpdate()
     {
-        if (lineaVisual == null || !lineaVisual.enabled || !tentaculoDesplegado) return;
-
-        lineaVisual.SetPosition(0, Vector3.zero);
-        for (int i = 0; i < eslabones.Count; i++)
+        if (lineaVisual != null && lineaVisual.enabled && tentaculoDesplegado && eslabones.Count > 0)
         {
-            lineaVisual.SetPosition(i + 1, eslabones[i].transform.localPosition);
+            lineaVisual.SetPosition(0, transform.position);
+
+            for (int i = 0; i < eslabones.Count; i++)
+            {
+                if (eslabones[i] != null)
+                    lineaVisual.SetPosition(i + 1, eslabones[i].transform.position);
+            }
+
+            if (puntaTentaculo != null)
+            {
+                float distanciaTotal = Vector2.Distance(transform.position, puntaTentaculo.transform.position);
+                lineaVisual.material.mainTextureScale = new Vector2(distanciaTotal, 1f);
+            }
         }
 
-        if (eslabones.Count > 0 && puntaTentaculo != null)
+        if (_outlineRenderer != null && _outlineRenderer.enabled && spritePulpo != null)
         {
-            float distanciaTotal = Vector2.Distance(transform.position, puntaTentaculo.transform.position);
-            lineaVisual.material.mainTextureScale = new Vector2(distanciaTotal, 1f);
+            _outlineRenderer.sprite = spritePulpo.sprite;
+            _outlineRenderer.flipX  = spritePulpo.flipX;
         }
     }
 
@@ -180,19 +292,30 @@ public class PulpoColumpio : MonoBehaviour
         if (other.CompareTag("PilarColumpio") && pilarActual == null && Time.time > tiempoSiguienteEnganche)
         {
             pilarActual = other.GetComponent<PilarRuta>();
+            colliderDelCuadradoOculto = other;
+
             if (pilarActual != null)
             {
-                pegadoAlTecho = true; 
+                if (miLectorDeAudio != null && sonidosEngancheTecho != null && sonidosEngancheTecho.Length > 0)
+                {
+                    int indiceAleatorio = Random.Range(0, sonidosEngancheTecho.Length);
+                    miLectorDeAudio.PlayOneShot(sonidosEngancheTecho[indiceAleatorio], 0.3f);
+                    Debug.Log("<color=cyan>¡PulpoColumpio: Sonido de gancho aleatorio reproducido!</color>");
+                }
+
+                saltosDisponibles = 1;
+                pegadoAlTecho = true;
                 if (animatorPulpo != null) animatorPulpo.SetBool("estaPegado", true);
 
                 rbPulpo.bodyType = RigidbodyType2D.Kinematic;
                 rbPulpo.linearVelocity = Vector2.zero;
+
                 if (colliderPulpo != null) colliderPulpo.enabled = false;
 
-                float longitudFinal = 5f; 
+                float longitudFinal = 5f;
 
                 GameObject babosa = GameObject.FindGameObjectWithTag(tagDeLaBabosa);
-                
+
                 if (babosa != null)
                 {
                     float distanciaAlCentroY = transform.position.y - babosa.transform.position.y;
@@ -202,13 +325,19 @@ public class PulpoColumpio : MonoBehaviour
                 if (longitudFinal > longitudMaximaTentaculo) longitudFinal = longitudMaximaTentaculo;
                 if (longitudFinal < 2f) longitudFinal = 2f;
 
-                float distanciaEntreEslabones = longitudFinal / numeroDeEslabones;
+                int calculoEslabones = Mathf.CeilToInt(longitudFinal / distanciaPorEslabon);
+                if (calculoEslabones < 3) calculoEslabones = 3;
+
+                float distanciaExactaEntreEslabones = longitudFinal / calculoEslabones;
+
+                GenerarCadenaDinamica(calculoEslabones, distanciaExactaEntreEslabones);
 
                 for (int i = 0; i < eslabones.Count; i++)
                 {
-                    eslabones[i].transform.localPosition = Vector3.down * (distanciaEntreEslabones * (i + 1));
-                    eslabones[i].transform.localRotation = Quaternion.identity;
-                    
+                    Vector3 posicionMundo = transform.position + Vector3.down * (distanciaExactaEntreEslabones * (i + 1));
+                    eslabones[i].transform.position = posicionMundo;
+                    eslabones[i].transform.rotation = Quaternion.identity;
+
                     eslabones[i].SetActive(true);
 
                     Rigidbody2D rbEslabon = eslabones[i].GetComponent<Rigidbody2D>();
@@ -216,7 +345,7 @@ public class PulpoColumpio : MonoBehaviour
                     {
                         rbEslabon.bodyType = RigidbodyType2D.Dynamic;
                         rbEslabon.linearVelocity = Vector2.zero;
-                        rbEslabon.angularVelocity = 0f; 
+                        rbEslabon.angularVelocity = 0f;
                     }
 
                     HingeJoint2D articulacion = eslabones[i].GetComponent<HingeJoint2D>();
@@ -225,10 +354,10 @@ public class PulpoColumpio : MonoBehaviour
                         if (i == 0)
                             articulacion.connectedAnchor = Vector2.zero;
                         else
-                            articulacion.connectedAnchor = new Vector2(0, -distanciaEntreEslabones);
+                            articulacion.connectedAnchor = new Vector2(0, -distanciaExactaEntreEslabones);
                     }
                 }
-                
+
                 tentaculoDesplegado = true;
                 if (lineaVisual != null) lineaVisual.enabled = true;
             }
@@ -237,7 +366,7 @@ public class PulpoColumpio : MonoBehaviour
 
     public void SoltarYAvanzar()
     {
-        pegadoAlTecho = false; 
+        pegadoAlTecho = false;
         if (animatorPulpo != null) animatorPulpo.SetBool("estaPegado", false);
 
         tentaculoDesplegado = false;
@@ -245,22 +374,14 @@ public class PulpoColumpio : MonoBehaviour
 
         tiempoSiguienteEnganche = Time.time + 0.4f;
 
-        for (int i = 0; i < eslabones.Count; i++)
-        {
-            Rigidbody2D rbEslabon = eslabones[i].GetComponent<Rigidbody2D>();
-            if (rbEslabon != null)
-            {
-                rbEslabon.linearVelocity = Vector2.zero;
-                rbEslabon.angularVelocity = 0f;
-            }
-            eslabones[i].SetActive(false);
-        }
+        DestruirCadenaActual();
 
         if (colliderPulpo != null) colliderPulpo.enabled = true;
 
         rbPulpo.bodyType = RigidbodyType2D.Dynamic;
         rbPulpo.WakeUp();
         pilarActual = null;
+        colliderDelCuadradoOculto = null;
     }
 
     public GameObject ObtenerPuntaTentaculo() { return puntaTentaculo; }
