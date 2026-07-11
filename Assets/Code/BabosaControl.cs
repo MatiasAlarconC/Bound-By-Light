@@ -21,6 +21,7 @@ public class BabosaControl : MonoBehaviour
 
     private bool estaControlado = false;
     private float _inputCooldown;
+    private float _inputHFisica = 0f;
 
     private SpriteRenderer miSprite;
     private Animator miAnimator;
@@ -32,6 +33,7 @@ public class BabosaControl : MonoBehaviour
         if (rbBabosa != null)
         {
             rbBabosa.mass = 0.5f;
+            rbBabosa.interpolation = RigidbodyInterpolation2D.Interpolate;
         }
 
         miSprite = GetComponent<SpriteRenderer>();
@@ -115,10 +117,7 @@ public class BabosaControl : MonoBehaviour
         }
         else
         {
-            if (rbBabosa != null)
-            {
-                rbBabosa.AddForce(new Vector2(inputH * fuerzaFisicaBalanceo * Time.fixedDeltaTime * 60f, 0f), ForceMode2D.Force);
-            }
+            _inputHFisica = inputH;
 
             if (Input.GetButtonDown("Jump"))
             {
@@ -136,6 +135,14 @@ public class BabosaControl : MonoBehaviour
             {
                 miSprite.flipX = false;
             }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (colgadaActualmente && rbBabosa != null && _inputHFisica != 0f)
+        {
+            rbBabosa.AddForce(new Vector2(_inputHFisica * fuerzaFisicaBalanceo, 0f), ForceMode2D.Force);
         }
     }
 

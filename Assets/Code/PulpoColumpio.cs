@@ -143,6 +143,7 @@ public class PulpoColumpio : MonoBehaviour
             rbEslabon.angularDamping = 1.2f;
             rbEslabon.linearDamping = 0.2f;
             rbEslabon.gravityScale = 0.8f;
+            rbEslabon.interpolation = RigidbodyInterpolation2D.Interpolate;
 
             HingeJoint2D articulacion = eslabon.AddComponent<HingeJoint2D>();
             articulacion.connectedBody = rbAnterior;
