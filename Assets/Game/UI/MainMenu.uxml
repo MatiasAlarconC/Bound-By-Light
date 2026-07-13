@@ -20,6 +20,7 @@
 
             <ui:VisualElement name="button-stack" class="button-stack">
                 <ui:Button text="jugar ahora"    name="btn-play"      class="menu-btn btn-primary" />
+                <ui:Button text="&#x25C0;&#x25C0;" name="btn-rewind"  class="menu-btn btn-rewind" />
                 <ui:Button text="continuar"       name="btn-continue"  class="menu-btn btn-primary" />
                 <ui:Button text="nueva partida"   name="btn-new-game"  class="menu-btn btn-danger" />
                 <ui:Button text="configuración"   name="btn-settings"  class="menu-btn btn-tertiary" />

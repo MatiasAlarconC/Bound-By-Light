@@ -25,7 +25,7 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _settingsOverlay;
     private VisualElement _angelEl;
     private VisualElement _slugEl;
-    private Button _btnPlay, _btnContinue, _btnNewGame, _btnSettings, _btnClose, _btnSave;
+    private Button _btnPlay, _btnContinue, _btnNewGame, _btnSettings, _btnClose, _btnSave, _btnRewind;
     private Slider _sMaster, _sMusic, _sSfx;
     private Label _vMaster, _vMusic, _vSfx, _lblSaved;
 
@@ -41,6 +41,7 @@ public class MainMenuController : MonoBehaviour
         _btnPlay     = _root.Q<Button>("btn-play");
         _btnContinue = _root.Q<Button>("btn-continue");
         _btnNewGame  = _root.Q<Button>("btn-new-game");
+        _btnRewind   = _root.Q<Button>("btn-rewind");
         _btnSettings = _root.Q<Button>("btn-settings");
 
         _settingsOverlay = _root.Q<VisualElement>("settings-overlay");
@@ -90,6 +91,7 @@ public class MainMenuController : MonoBehaviour
         _btnPlay.clicked     += OnPlay;
         _btnContinue.clicked += OnContinue;
         _btnNewGame.clicked  += OnNewGame;
+        _btnRewind?.RegisterCallback<ClickEvent>(_ => OnRewind());
         _btnSettings.clicked += OpenSettings;
         _btnClose.clicked    += CloseSettings;
         _btnSave.clicked     += SaveSettings;
@@ -104,16 +106,28 @@ public class MainMenuController : MonoBehaviour
 
     private void RefreshButtons()
     {
-        bool hasSave = PlayerPrefs.GetInt(KEY_SAVE_EXISTS, 0) == 1;
+        bool hasSave       = PlayerPrefs.GetInt(KEY_SAVE_EXISTS, 0) == 1;
+        bool hasCheckpoint = PlayerPrefs.HasKey("CheckpointX") && PlayerPrefs.HasKey("CheckpointY");
+
         SetVisible(_btnPlay,     !hasSave);
         SetVisible(_btnContinue, hasSave);
         SetVisible(_btnNewGame,  hasSave);
+        if (_btnRewind != null) SetVisible(_btnRewind, hasSave && hasCheckpoint);
     }
 
     private static void SetVisible(Button btn, bool visible)
     {
         if (visible) btn.RemoveFromClassList("hidden");
         else         btn.AddToClassList("hidden");
+    }
+
+    private void OnRewind()
+    {
+        // Borrar HasExitPos para que GameManager use CheckpointX/Y en lugar de la posición de salida
+        PlayerPrefs.DeleteKey("HasExitPos");
+        PlayerPrefs.Save();
+        string scene = PlayerPrefs.GetString(KEY_LAST_SCENE, newGameScene);
+        SceneManager.LoadScene(scene);
     }
 
     private void OnPlay()

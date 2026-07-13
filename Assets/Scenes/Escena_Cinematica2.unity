@@ -242,6 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CargadorPorVideo
   nombreEscenaGameplay: Nivel2
+  nombreArchivoVideo: Cinematica2.mp4
 --- !u!328 &1467609415
 VideoPlayer:
   m_ObjectHideFlags: 0
@@ -250,7 +251,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1467609413}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 55cdb3724155f6a41ae7aa7172d6a790, type: 3}
+  m_VideoClip: {fileID: 0}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 617035340}

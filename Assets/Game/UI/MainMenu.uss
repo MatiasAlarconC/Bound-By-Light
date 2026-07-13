@@ -177,6 +177,39 @@
     scale: 1.04 1.04;
 }
 
+/* Rewind — icono compacto, solo visible con checkpoint activo */
+.btn-rewind {
+    -unity-font: url("project://database/Assets/Game/Fonts/Caveat-Bold FONT.ttf");
+    font-size: 18px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    background-color: rgba(40, 130, 145, 0.14);
+    color: rgba(90, 210, 230, 0.80);
+    border-width: 1px;
+    border-color: rgba(60, 185, 210, 0.40);
+    -unity-text-align: middle-center;
+    align-self: center;
+}
+
+.btn-rewind:hover {
+    background-color: rgba(50, 165, 185, 0.26);
+    color: rgba(160, 240, 255, 0.98);
+    border-color: rgba(80, 210, 235, 0.80);
+    scale: 1.08 1.08;
+    translate: 0 -2px;
+}
+
+.btn-rewind:active {
+    scale: 0.94 0.94;
+    translate: 0 1px;
+    background-color: rgba(50, 165, 185, 0.35);
+}
+
 /* Tertiary — "configuración": muy sutil */
 .btn-tertiary {
     font-size: 12px;

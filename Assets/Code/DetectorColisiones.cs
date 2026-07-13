@@ -47,7 +47,10 @@ public class DetectorColisiones : MonoBehaviour
         // 2. Si chocamos con pinchos o vacío (Esto lo siguen haciendo ambos personajes)
         if (collision.CompareTag("DeadZone"))
         {
-            // Le ordenamos al GameManager que active la reaparición doble
+            // Babosa colgada del tentáculo o montada en Angel → inmune al geiser
+            BabosaControl babosa = GetComponent<BabosaControl>();
+            if (babosa != null && (babosa.EstaColgada || babosa.EstaMontada)) return;
+
             gameManager.MuerteYRespawnCooperativo();
         }
     }

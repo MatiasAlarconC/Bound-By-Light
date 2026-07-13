@@ -242,6 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CargadorPorVideo
   nombreEscenaGameplay: MecanicaPulpo
+  nombreArchivoVideo: Cinematica1.mp4
 --- !u!328 &1056087232
 VideoPlayer:
   m_ObjectHideFlags: 0
@@ -250,7 +251,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1056087230}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 7e0c46cf88f686248b55186f2bec44a5, type: 3}
+  m_VideoClip: {fileID: 0}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 682431497}

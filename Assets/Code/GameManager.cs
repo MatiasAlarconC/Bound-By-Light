@@ -44,7 +44,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Sistema de Checkpoints")]
     private Vector3 puntoDeReaparicion;
-    private bool controlandoAlPulpo = false;
+    private bool controlandoAlPulpo  = false;
+    private bool estaEnModoCombinado = false;
     private float tiempoSiguienteMuerte = 0f;
     private float _switchCooldown = 0f;
 
@@ -105,11 +106,15 @@ public class GameManager : MonoBehaviour
             miLectorDeAudio = gameObject.AddComponent<AudioSource>();
         }
 
+        CrearTriangulosIndicadores();
         ActivarCartelUI(false);
     }
 
     void Update()
     {
+        // Modo combinado: no se permite cambiar de personaje
+        if (estaEnModoCombinado) return;
+
         if (Time.time > _switchCooldown &&
             (Input.GetKeyDown(teclaCambio) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)))
         {
@@ -260,6 +265,16 @@ public class GameManager : MonoBehaviour
 
         tiempoSiguienteMuerte = Time.time + 0.4f;
 
+        // Si estaban combinados, forzar separación antes de respawnear
+        if (estaEnModoCombinado)
+        {
+            MantarrayaControl mc = FindFirstObjectByType<MantarrayaControl>();
+            if (mc != null) mc.ForceDetach();
+            estaEnModoCombinado = false;
+            controlandoAlPulpo  = false;
+            ActualizarControlesEstrictos();
+        }
+
         Debug.Log("<color=red>¡Muerte detectada! Reproduciendo sonido aleatorio y reapareciendo...</color>");
 
         if (miLectorDeAudio != null)
@@ -303,5 +318,97 @@ public class GameManager : MonoBehaviour
             cartelTeclasPulpo.SetActive(esPulpo);
             cartelTeclasBabosa.SetActive(!esPulpo);
         }
+    }
+
+    // ── Modo combinado (Babosa montada en Mantarraya) ─────────────────────────
+
+    public void SetModoCombinado(bool combinado)
+    {
+        estaEnModoCombinado = combinado;
+        GeiserControl.modoCombinadoActivo = combinado;
+
+        // Actualizar todas las barreras de geisers inmediatamente
+        foreach (var gc in FindObjectsByType<GeiserControl>(FindObjectsSortMode.None))
+            gc.ActualizarBarreras();
+
+        if (combinado)
+        {
+            // Forzar control al Pulpo/Mantarraya; Babosa queda pasiva
+            controlandoAlPulpo = true;
+            if (hermanoMenorBabosa != null) hermanoMenorBabosa.SetControlActivo(false);
+            if (hermanoMayorPulpo  != null) hermanoMayorPulpo.SetControlActivo(true);
+
+            // Ocultar triángulos individuales
+            if (trianguloIndicadorBabosa != null) trianguloIndicadorBabosa.SetActive(false);
+            if (trianguloIndicadorPulpo  != null) trianguloIndicadorPulpo.SetActive(false);
+
+            // HUD: mostrar estado combinado
+            if (hudUI != null) hudUI.MostrarCombinado();
+        }
+        else
+        {
+            // Volver a modo individual: Babosa activa
+            controlandoAlPulpo = false;
+            ActualizarControlesEstrictos();
+            ActualizarCuartoActual();
+            ForzarSaltoDeCamara();
+        }
+    }
+
+    // ── Triángulo indicador ────────────────────────────────────────────────────
+
+    void CrearTriangulosIndicadores()
+    {
+        if (hermanoMenorBabosa != null && trianguloIndicadorBabosa == null)
+            trianguloIndicadorBabosa = CrearTriangulo("IndicadorBabosa", hermanoMenorBabosa.transform,
+                                                       new Color(0f, 0.15f, 0.75f, 1f));   // azul oscuro
+
+        if (hermanoMayorPulpo != null && trianguloIndicadorPulpo == null)
+            trianguloIndicadorPulpo = CrearTriangulo("IndicadorPulpo", hermanoMayorPulpo.transform,
+                                                      new Color(1f, 0.5f, 0.05f, 1f));   // naranja
+    }
+
+    GameObject CrearTriangulo(string nombre, Transform padre, Color color)
+    {
+        // Posición en world-space: 1 unidad por encima del personaje, sin heredar escala
+        GameObject go = new GameObject(nombre);
+        go.transform.SetParent(padre, false);
+
+        // Compensar escala del padre para que el triángulo mida ~0.55 unidades en world space
+        float sx = padre.lossyScale.x != 0f ? 0.55f / Mathf.Abs(padre.lossyScale.x) : 1f;
+        float sy = padre.lossyScale.y != 0f ? 0.55f / Mathf.Abs(padre.lossyScale.y) : 1f;
+        go.transform.localScale = new Vector3(sx, sy, 1f);
+
+        // Posición: 1.9 unidades arriba en world-space
+        float offsetY = padre.lossyScale.y != 0f ? 1.9f / Mathf.Abs(padre.lossyScale.y) : 2f;
+        go.transform.localPosition = new Vector3(0f, offsetY, 0f);
+
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = CrearSpriteTrianguloInvertido(color);
+        sr.sortingLayerName = "Player";
+        sr.sortingOrder = 10;
+
+        return go;
+    }
+
+    Sprite CrearSpriteTrianguloInvertido(Color color)
+    {
+        int tam = 32;
+        Texture2D tex = new Texture2D(tam, tam, TextureFormat.RGBA32, false);
+        Color[] pixels = new Color[tam * tam];
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = Color.clear;
+
+        // Triángulo invertido ▼: ancho arriba, punta abajo
+        for (int y = 0; y < tam; y++)
+        {
+            float t = (float)y / (tam - 1);           // 0=abajo(punta) 1=arriba(base)
+            int halfW = Mathf.RoundToInt(t * (tam / 2f));
+            int cx = tam / 2;
+            for (int x = cx - halfW; x <= cx + halfW; x++)
+                if (x >= 0 && x < tam) pixels[y * tam + x] = color;
+        }
+        tex.SetPixels(pixels);
+        tex.Apply();
+        return Sprite.Create(tex, new Rect(0, 0, tam, tam), new Vector2(0.5f, 0.5f), tam);
     }
 }

@@ -23,6 +23,11 @@ public class BabosaControl : MonoBehaviour
     private float _inputCooldown;
     private float _inputHFisica = 0f;
 
+    public bool EstaMontada        { get; set; } = false;
+    public bool FueLanzadaPorGeiser { get; set; } = false;
+    public bool EstaControlado => estaControlado;
+    public bool EstaColgada    => colgadaActualmente;
+
     private SpriteRenderer miSprite;
     private Animator miAnimator;
     private SpriteRenderer _outlineRenderer;
@@ -92,6 +97,7 @@ public class BabosaControl : MonoBehaviour
     {
         colgadaActualmente = false;
         cooldownEnganche = 0f;
+        FueLanzadaPorGeiser = false;
         if (agarreActual != null)
         {
             Destroy(agarreActual);
@@ -102,9 +108,25 @@ public class BabosaControl : MonoBehaviour
         if (rbBabosa != null) rbBabosa.linearVelocity = Vector2.zero;
     }
 
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (!FueLanzadaPorGeiser) return;
+        // Detectar contacto con suelo (normal apuntando hacia arriba)
+        foreach (ContactPoint2D c in col.contacts)
+        {
+            if (c.normal.y > 0.5f)
+            {
+                FueLanzadaPorGeiser = false;
+                GameManager gm = FindFirstObjectByType<GameManager>();
+                if (gm != null) gm.MuerteYRespawnCooperativo();
+                return;
+            }
+        }
+    }
+
     void Update()
     {
-        if (!estaControlado) return;
+        if (!estaControlado || EstaMontada) return;
         if (Time.time < _inputCooldown) return;
 
         float inputH = 0f;
@@ -140,6 +162,7 @@ public class BabosaControl : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (EstaMontada) return;
         if (colgadaActualmente && rbBabosa != null && _inputHFisica != 0f)
         {
             rbBabosa.AddForce(new Vector2(_inputHFisica * fuerzaFisicaBalanceo, 0f), ForceMode2D.Force);
