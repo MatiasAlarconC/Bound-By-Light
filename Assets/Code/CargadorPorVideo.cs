@@ -5,10 +5,13 @@ using UnityEngine.Video;
 public class CargadorPorVideo : MonoBehaviour
 {
     private VideoPlayer miVideoPlayer;
-    
+
     [Header("Configuración")]
     [Tooltip("Escribe el nombre exacto de la escena a la que irá al terminar")]
     [SerializeField] private string nombreEscenaGameplay = "Nivel1";
+
+    [Tooltip("Nombre del archivo de video en StreamingAssets/Cinematics/ (ej: Cinematica1.mp4)")]
+    [SerializeField] private string nombreArchivoVideo = "";
 
     void Start()
     {
@@ -16,12 +19,16 @@ public class CargadorPorVideo : MonoBehaviour
 
         if (miVideoPlayer != null)
         {
-            // Le indicamos a Unity que escuche únicamente cuando el video termine por sí solo
+            if (!string.IsNullOrEmpty(nombreArchivoVideo))
+            {
+                miVideoPlayer.source = VideoSource.Url;
+                miVideoPlayer.url = System.IO.Path.Combine(Application.streamingAssetsPath, "Cinematics", nombreArchivoVideo);
+                miVideoPlayer.Play();
+            }
             miVideoPlayer.loopPointReached += AlTerminarVideo;
         }
         else
         {
-            // Si por algún error extraño el video no carga, pasa a la escena para no congelar el juego
             CargarJuego();
         }
     }

@@ -49,6 +49,14 @@ public class PulpoColumpio : MonoBehaviour
     private int saltosDisponibles = 1;
     private float _inputCooldown;
     private SpriteRenderer _outlineRenderer;
+    private bool estaEnModoCombinado = false;
+
+    public Collider2D GetPhysicsCollider() => colliderPulpo;
+    public void SetModoCombinado(bool combinado)
+    {
+        estaEnModoCombinado = combinado;
+        if (combinado && pegadoAlTecho) SoltarYAvanzar();   // soltar techo si estaba enganchado
+    }
 
     void Awake()
     {
@@ -193,7 +201,7 @@ public class PulpoColumpio : MonoBehaviour
 
         if (Time.time < _inputCooldown) return;
 
-        if (colliderPulpo != null && colliderPulpo.IsTouchingLayers(capaSuelo) && rbPulpo.linearVelocity.y <= 0.1f)
+        if (EstaEnSuelo() && rbPulpo.linearVelocity.y <= 0.1f)
         {
             saltosDisponibles = 1;
         }
@@ -290,13 +298,12 @@ public class PulpoColumpio : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("PilarColumpio") && pilarActual == null && Time.time > tiempoSiguienteEnganche)
+        if (other.CompareTag("PilarColumpio") && !estaEnModoCombinado && pilarActual == null && Time.time > tiempoSiguienteEnganche)
         {
-            pilarActual = other.GetComponent<PilarRuta>();
+            pilarActual = other.GetComponent<PilarRuta>();   // puede ser null en Squares sin PilarRuta
             colliderDelCuadradoOculto = other;
 
-            if (pilarActual != null)
-            {
+            {   // siempre proceder — no se requiere PilarRuta
                 if (miLectorDeAudio != null && sonidosEngancheTecho != null && sonidosEngancheTecho.Length > 0)
                 {
                     int indiceAleatorio = Random.Range(0, sonidosEngancheTecho.Length);
@@ -383,6 +390,16 @@ public class PulpoColumpio : MonoBehaviour
         rbPulpo.WakeUp();
         pilarActual = null;
         colliderDelCuadradoOculto = null;
+    }
+
+    // Detección de suelo por círculo en los pies — funciona independiente del layer del Tilemap
+    bool EstaEnSuelo()
+    {
+        if (colliderPulpo == null) return false;
+        Vector2 pies = (Vector2)transform.position + Vector2.down * colliderPulpo.bounds.extents.y;
+        // Excluir solo capas de personajes para no auto-detectarse
+        int excluir = LayerMask.GetMask("Pulpo", "Player", "Babosa");
+        return Physics2D.OverlapCircle(pies, 0.22f, ~excluir);
     }
 
     public GameObject ObtenerPuntaTentaculo() { return puntaTentaculo; }
