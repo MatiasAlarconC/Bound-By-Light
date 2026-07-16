@@ -17,6 +17,10 @@ public class GeiserControl : MonoBehaviour
     [Tooltip("Arrastra aquí el AreaEffector2D (WindEffect) que está sobre este geiser")]
     [SerializeField] private AreaEffector2D areaEffector;
 
+    [Header("Audio")]
+    [Tooltip("AudioSource del sonido del géiser. Si no se asigna, se busca automáticamente en este objeto.")]
+    [SerializeField] private AudioSource audioSourceGeiser;
+
     [Header("Fuerza del impulso")]
     [Tooltip("Fuerza continua aplicada a la Babosa mientras está en el chorro (default = 15). " +
              "El largo del chorro de partículas escala con este valor.")]
@@ -74,6 +78,16 @@ public class GeiserControl : MonoBehaviour
 
         if (areaEffector != null)
             effectorCollider = areaEffector.GetComponent<Collider2D>();
+
+        if (audioSourceGeiser == null)
+            audioSourceGeiser = GetComponent<AudioSource>();
+
+        if (audioSourceGeiser != null)
+        {
+            audioSourceGeiser.playOnAwake = false;
+            audioSourceGeiser.loop = true;
+            audioSourceGeiser.Stop();
+        }
 
         CrearBarreraWorldSpace();
         CrearSistemaParticulasCarga();
@@ -171,6 +185,8 @@ public class GeiserControl : MonoBehaviour
             temporizador = activo ? tiempoActivo : tiempoInactivo;
         }
 
+        ActualizarSonidoPorCamara();
+
         combinadoEnZona = false;
         soloEnZona      = false;
 
@@ -239,6 +255,38 @@ public class GeiserControl : MonoBehaviour
         }
     }
 
+    void ActualizarSonidoPorCamara()
+    {
+        if (audioSourceGeiser == null || audioSourceGeiser.clip == null)
+            return;
+
+        bool debeSonar = activo && EstaGeiserDentroDeCamara();
+
+        if (debeSonar)
+        {
+            if (!audioSourceGeiser.isPlaying)
+                audioSourceGeiser.Play();
+        }
+        else
+        {
+            if (audioSourceGeiser.isPlaying)
+                audioSourceGeiser.Stop();
+        }
+    }
+
+    bool EstaGeiserDentroDeCamara()
+    {
+        Camera camara = Camera.main;
+        if (camara == null)
+            return false;
+
+        Vector3 posicionViewport = camara.WorldToViewportPoint(transform.position);
+
+        return posicionViewport.z > 0f &&
+               posicionViewport.x >= 0f && posicionViewport.x <= 1f &&
+               posicionViewport.y >= 0f && posicionViewport.y <= 1f;
+    }
+
     void ActualizarEstado(bool encendido)
     {
         activo = encendido;
@@ -285,6 +333,8 @@ public class GeiserControl : MonoBehaviour
                 sistemaParticulasCarga.Play();
             }
         }
+
+        ActualizarSonidoPorCamara();
     }
 
     void CrearSistemaParticulasCarga()
