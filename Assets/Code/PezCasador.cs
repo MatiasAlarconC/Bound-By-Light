@@ -12,6 +12,14 @@ public class PezPatrulla : MonoBehaviour
     [SerializeField] private float velocidadPersecucion = 4f;
     [SerializeField] private float rangoDeteccion = 5f;
 
+    [Header("Sonido")]
+    [Tooltip("Suena en loop cuando la Babosa o el Angel están dentro del radio de detección")]
+    [SerializeField] private AudioClip sonidoPez;
+    [Tooltip("Radio en el que se activa el sonido (puede ser distinto al de persecución)")]
+    [SerializeField] private float radioSonido = 8f;
+    private AudioSource audioSource;
+    private Transform angelTransform;
+
     private Transform objetivoPatrulla;
     private SpriteRenderer spriteRenderer;
     private GameManager gameManager;
@@ -21,18 +29,23 @@ public class PezPatrulla : MonoBehaviour
         objetivoPatrulla = puntoB;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        gameManager = FindFirstObjectByType<GameManager>();
+        gameManager    = FindFirstObjectByType<GameManager>();
 
         if (babosa == null)
         {
             GameObject jugador = GameObject.FindGameObjectWithTag("Player");
-
-            if (jugador != null)
-            {
-                babosa = jugador.transform;
-            }
+            if (jugador != null) babosa = jugador.transform;
         }
+
+        PulpoColumpio angel = FindFirstObjectByType<PulpoColumpio>();
+        if (angel != null) angelTransform = angel.transform;
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.clip        = sonidoPez;
+        audioSource.loop        = true;
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
     }
 
     void Update()
@@ -45,12 +58,18 @@ public class PezPatrulla : MonoBehaviour
         );
 
         if (distancia <= rangoDeteccion)
-        {
             Perseguir();
-        }
         else
-        {
             Patrullar();
+
+        // Sonido: activar si Babosa o Angel están dentro del radioSonido
+        if (sonidoPez != null)
+        {
+            bool cerca = (babosa        != null && Vector2.Distance(transform.position, babosa.position)        <= radioSonido)
+                      || (angelTransform != null && Vector2.Distance(transform.position, angelTransform.position) <= radioSonido);
+
+            if (cerca && !audioSource.isPlaying) audioSource.Play();
+            else if (!cerca && audioSource.isPlaying) audioSource.Stop();
         }
     }
 
@@ -129,9 +148,10 @@ public class PezPatrulla : MonoBehaviour
         }
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(
-            transform.position,
-            rangoDeteccion
-        );
+        Gizmos.DrawWireSphere(transform.position, rangoDeteccion);
+
+        // Radio de sonido (naranja)
+        Gizmos.color = new Color(1f, 0.5f, 0f, 0.3f);
+        Gizmos.DrawWireSphere(transform.position, radioSonido);
     }
 }
