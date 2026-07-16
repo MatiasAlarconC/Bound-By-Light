@@ -55,7 +55,11 @@ public class PulpoColumpio : MonoBehaviour
     public void SetModoCombinado(bool combinado)
     {
         estaEnModoCombinado = combinado;
-        if (combinado && pegadoAlTecho) SoltarYAvanzar();   // soltar techo si estaba enganchado
+        if (combinado)
+        {
+            if (pegadoAlTecho) SoltarYAvanzar();
+            saltosDisponibles = 2;   // doble salto al transformarse
+        }
     }
 
     void Awake()
@@ -203,7 +207,7 @@ public class PulpoColumpio : MonoBehaviour
 
         if (EstaEnSuelo() && rbPulpo.linearVelocity.y <= 0.1f)
         {
-            saltosDisponibles = 1;
+            saltosDisponibles = estaEnModoCombinado ? 2 : 1;
         }
 
         float inputH = 0f;

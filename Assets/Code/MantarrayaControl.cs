@@ -14,8 +14,10 @@ public class MantarrayaControl : MonoBehaviour
     [Header("Sonidos")]
     [Tooltip("Suena una vez al momento de la transformación")]
     [SerializeField] private AudioClip sonidoTransformacion;
-    [Tooltip("Se repite en loop mientras el Angel vuela como mantarraya")]
+    [Tooltip("Suena cuando el Angel salta estando transformado")]
     [SerializeField] private AudioClip sonidoVuelo;
+    [Tooltip("Suena una vez al destransformarse")]
+    [SerializeField] private AudioClip sonidoDestransformacion;
     private AudioSource audioSource;
 
     private BabosaControl babosa;
@@ -156,7 +158,7 @@ public class MantarrayaControl : MonoBehaviour
         montando = false;
     }
 
-    void Desmontar()
+    public void Desmontar()
     {
         montado  = false;
         montando = false;
@@ -182,7 +184,12 @@ public class MantarrayaControl : MonoBehaviour
         if (animatorAngel != null) animatorAngel.SetBool("estaMontado", false);
         if (indicadorGO != null) indicadorGO.SetActive(false);
 
-        if (audioSource != null) { audioSource.Stop(); audioSource.loop = false; }
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+            if (sonidoDestransformacion != null) audioSource.PlayOneShot(sonidoDestransformacion);
+        }
 
         GameManager gm = Object.FindFirstObjectByType<GameManager>();
         if (gm != null) gm.SetModoCombinado(false);
@@ -217,7 +224,12 @@ public class MantarrayaControl : MonoBehaviour
         if (animatorAngel != null) animatorAngel.SetBool("estaMontado", false);
         if (indicadorGO != null) indicadorGO.SetActive(false);
 
-        if (audioSource != null) { audioSource.Stop(); audioSource.loop = false; }
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+            if (sonidoDestransformacion != null) audioSource.PlayOneShot(sonidoDestransformacion);
+        }
     }
 
     void CrearIndicador()

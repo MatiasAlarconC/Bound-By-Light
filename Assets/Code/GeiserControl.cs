@@ -44,6 +44,8 @@ public class GeiserControl : MonoBehaviour
     [Header("Radio de transformación mantarraya")]
     [Tooltip("El Angel solo puede transformarse en mantarraya si está dentro de este radio del géiser")]
     [SerializeField] public float radioActivacionTransformacion = 10f;
+    [Tooltip("Distancia horizontal máxima desde el géiser antes de forzar la destransformación")]
+    [SerializeField] private float anchoDesactivacion = 20f;
 
     [Header("Barrera física (world-space, sin herencia de escala)")]
     [Tooltip("Ancho del canal de agua (ajustar para que coincida con el ancho del WindEffect)")]
@@ -63,6 +65,7 @@ public class GeiserControl : MonoBehaviour
     private Rigidbody2D  rbAngel;
     private GameManager  gmRef;
     private bool activo = true;
+    private MantarrayaControl mantarrayaRef;
     private bool combinadoEnZona         = false;
     private bool combinadoEnZonaAnterior = false;
     private bool soloEnZona              = false;
@@ -156,7 +159,8 @@ public class GeiserControl : MonoBehaviour
         angelRef = FindFirstObjectByType<PulpoColumpio>();
         if (angelRef != null) rbAngel = angelRef.GetComponent<Rigidbody2D>();
 
-        gmRef = FindFirstObjectByType<GameManager>();
+        gmRef         = FindFirstObjectByType<GameManager>();
+        mantarrayaRef = FindFirstObjectByType<MantarrayaControl>();
 
         // Deshabilitar TODOS los AreaEffectors de la escena — la fuerza la maneja solo GeiserControl vía código
         foreach (AreaEffector2D ae in FindObjectsByType<AreaEffector2D>(FindObjectsSortMode.None))
@@ -206,6 +210,14 @@ public class GeiserControl : MonoBehaviour
 
         combinadoEnZona = false;
         soloEnZona      = false;
+
+        // Auto-destransformación por distancia horizontal
+        if (modoCombinadoActivo && angelRef != null && mantarrayaRef != null)
+        {
+            float distH = Mathf.Abs(angelRef.transform.position.x - transform.position.x);
+            if (distH > anchoDesactivacion)
+                mantarrayaRef.Desmontar();
+        }
 
         if (activo && babosaRef != null)
         {
@@ -671,5 +683,13 @@ public class GeiserControl : MonoBehaviour
         // Radio de transformación mantarraya (amarillo)
         Gizmos.color = new Color(1f, 0.9f, 0f, 0.35f);
         Gizmos.DrawWireSphere(transform.position, radioActivacionTransformacion);
+
+        // Límite horizontal de desactivación (rojo)
+        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.5f);
+        Vector3 p = transform.position;
+        Gizmos.DrawLine(p + Vector3.left  * anchoDesactivacion + Vector3.up * 5f,
+                        p + Vector3.left  * anchoDesactivacion + Vector3.down * 5f);
+        Gizmos.DrawLine(p + Vector3.right * anchoDesactivacion + Vector3.up * 5f,
+                        p + Vector3.right * anchoDesactivacion + Vector3.down * 5f);
     }
 }
