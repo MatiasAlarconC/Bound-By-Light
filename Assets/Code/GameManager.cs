@@ -49,6 +49,13 @@ public class GameManager : MonoBehaviour
     private float tiempoSiguienteMuerte = 0f;
     private float _switchCooldown = 0f;
 
+    // Sorting de personajes: el controlado se renderiza encima del otro
+    private SpriteRenderer[] _rendsBabosa;
+    private SpriteRenderer[] _rendsPulpo;
+    private int[] _ordenOrigBabosa;
+    private int[] _ordenOrigPulpo;
+    private const int SORTING_BOOST = 10;
+
     void Start()
     {
         if (hudUI == null)
@@ -108,6 +115,7 @@ public class GameManager : MonoBehaviour
 
         CrearTriangulosIndicadores();
         ActivarCartelUI(false);
+        StartCoroutine(CachearSortingOrders());
     }
 
     void Update()
@@ -163,6 +171,7 @@ public class GameManager : MonoBehaviour
         }
 
         ActivarCartelUI(controlandoAlPulpo);
+        ActualizarOrdenCapas();
     }
 
     void ActualizarCuartoActual()
@@ -318,6 +327,37 @@ public class GameManager : MonoBehaviour
             cartelTeclasPulpo.SetActive(esPulpo);
             cartelTeclasBabosa.SetActive(!esPulpo);
         }
+    }
+
+    // ── Sorting de personajes ─────────────────────────────────────────────────
+
+    System.Collections.IEnumerator CachearSortingOrders()
+    {
+        yield return null; // esperar un frame para que todos los Start() creen sus renderers
+        if (hermanoMenorBabosa != null)
+        {
+            _rendsBabosa     = hermanoMenorBabosa.GetComponentsInChildren<SpriteRenderer>(true);
+            _ordenOrigBabosa = System.Array.ConvertAll(_rendsBabosa, r => r.sortingOrder);
+        }
+        if (hermanoMayorPulpo != null)
+        {
+            _rendsPulpo     = hermanoMayorPulpo.GetComponentsInChildren<SpriteRenderer>(true);
+            _ordenOrigPulpo = System.Array.ConvertAll(_rendsPulpo, r => r.sortingOrder);
+        }
+        ActualizarOrdenCapas();
+    }
+
+    void ActualizarOrdenCapas()
+    {
+        if (estaEnModoCombinado) return;
+        if (_rendsBabosa != null && _ordenOrigBabosa != null)
+            for (int i = 0; i < _rendsBabosa.Length; i++)
+                if (_rendsBabosa[i] != null)
+                    _rendsBabosa[i].sortingOrder = _ordenOrigBabosa[i] + (controlandoAlPulpo ? 0 : SORTING_BOOST);
+        if (_rendsPulpo != null && _ordenOrigPulpo != null)
+            for (int i = 0; i < _rendsPulpo.Length; i++)
+                if (_rendsPulpo[i] != null)
+                    _rendsPulpo[i].sortingOrder = _ordenOrigPulpo[i] + (controlandoAlPulpo ? SORTING_BOOST : 0);
     }
 
     // ── Modo combinado (Babosa montada en Mantarraya) ─────────────────────────
