@@ -56,11 +56,16 @@ public class MantarrayaControl : MonoBehaviour
     {
         if (babosa == null) return;
 
-        // Salto desmonta cuando la Babosa tiene el control
-        if (montado && babosa.EstaControlado && Input.GetButtonDown("Jump"))
+        if (montado && Input.GetButtonDown("Jump"))
         {
-            Desmontar();
-            return;
+            if (babosa.EstaControlado)
+            {
+                Desmontar();
+                return;
+            }
+            // Salto del combinado: reproducir sonido de nado una vez
+            if (audioSource != null && sonidoVuelo != null)
+                audioSource.PlayOneShot(sonidoVuelo);
         }
 
         if (!Input.GetKeyDown(KeyCode.Z)) return;
@@ -112,17 +117,9 @@ public class MantarrayaControl : MonoBehaviour
         if (animatorAngel != null) animatorAngel.SetBool("estaMontado", true);
         if (indicadorGO != null) indicadorGO.SetActive(true);
 
-        // Sonido transformación (one-shot) + vuelo en loop
-        if (audioSource != null)
-        {
-            if (sonidoTransformacion != null) audioSource.PlayOneShot(sonidoTransformacion);
-            if (sonidoVuelo != null)
-            {
-                audioSource.clip = sonidoVuelo;
-                audioSource.loop = true;
-                audioSource.PlayDelayed(sonidoTransformacion != null ? sonidoTransformacion.length : 0f);
-            }
-        }
+        // Sonido transformación (one-shot)
+        if (audioSource != null && sonidoTransformacion != null)
+            audioSource.PlayOneShot(sonidoTransformacion);
 
         GameManager gm = Object.FindFirstObjectByType<GameManager>();
         if (gm != null) gm.SetModoCombinado(true);
