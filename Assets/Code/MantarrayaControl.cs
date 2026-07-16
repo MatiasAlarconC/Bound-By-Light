@@ -11,6 +11,13 @@ public class MantarrayaControl : MonoBehaviour
     [Tooltip("Color del indicador si no hay sprite asignado")]
     [SerializeField] private Color colorIndicador = new Color(0.2f, 0.8f, 1f, 0.9f);
 
+    [Header("Sonidos")]
+    [Tooltip("Suena una vez al momento de la transformación")]
+    [SerializeField] private AudioClip sonidoTransformacion;
+    [Tooltip("Se repite en loop mientras el Angel vuela como mantarraya")]
+    [SerializeField] private AudioClip sonidoVuelo;
+    private AudioSource audioSource;
+
     private BabosaControl babosa;
     private Rigidbody2D  rbBabosa;
     private Collider2D   colBabosa;
@@ -37,6 +44,11 @@ public class MantarrayaControl : MonoBehaviour
 
         animatorAngel = GetComponent<Animator>();
 
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+
         CrearIndicador();
     }
 
@@ -57,7 +69,14 @@ public class MantarrayaControl : MonoBehaviour
         {
             float dist = Vector2.Distance(transform.position, babosa.transform.position);
             if (dist <= distanciaMaxima)
+            {
+                if (!GeiserControl.AngelEnRangoDeAlgunGeiser(transform.position))
+                {
+                    Debug.Log("[MantarrayaControl] Transformación bloqueada: el Angel no está cerca de ningún géiser.");
+                    return;
+                }
                 Montar();
+            }
         }
         else
         {
@@ -92,6 +111,18 @@ public class MantarrayaControl : MonoBehaviour
 
         if (animatorAngel != null) animatorAngel.SetBool("estaMontado", true);
         if (indicadorGO != null) indicadorGO.SetActive(true);
+
+        // Sonido transformación (one-shot) + vuelo en loop
+        if (audioSource != null)
+        {
+            if (sonidoTransformacion != null) audioSource.PlayOneShot(sonidoTransformacion);
+            if (sonidoVuelo != null)
+            {
+                audioSource.clip = sonidoVuelo;
+                audioSource.loop = true;
+                audioSource.PlayDelayed(sonidoTransformacion != null ? sonidoTransformacion.length : 0f);
+            }
+        }
 
         GameManager gm = Object.FindFirstObjectByType<GameManager>();
         if (gm != null) gm.SetModoCombinado(true);
@@ -154,6 +185,8 @@ public class MantarrayaControl : MonoBehaviour
         if (animatorAngel != null) animatorAngel.SetBool("estaMontado", false);
         if (indicadorGO != null) indicadorGO.SetActive(false);
 
+        if (audioSource != null) { audioSource.Stop(); audioSource.loop = false; }
+
         GameManager gm = Object.FindFirstObjectByType<GameManager>();
         if (gm != null) gm.SetModoCombinado(false);
     }
@@ -186,6 +219,8 @@ public class MantarrayaControl : MonoBehaviour
 
         if (animatorAngel != null) animatorAngel.SetBool("estaMontado", false);
         if (indicadorGO != null) indicadorGO.SetActive(false);
+
+        if (audioSource != null) { audioSource.Stop(); audioSource.loop = false; }
     }
 
     void CrearIndicador()

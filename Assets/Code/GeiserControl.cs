@@ -6,11 +6,21 @@ using UnityEditor;
 
 public class GeiserControl : MonoBehaviour
 {
-    public static List<Collider2D> todasLasBarreras = new List<Collider2D>();
+    public static List<Collider2D>    todasLasBarreras  = new List<Collider2D>();
+    public static List<GeiserControl> todosLosGeisers   = new List<GeiserControl>();
     public static bool modoCombinadoActivo = false;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void LimpiarBarrerasAlIniciar() { todasLasBarreras.Clear(); modoCombinadoActivo = false; }
+    static void LimpiarBarrerasAlIniciar() { todasLasBarreras.Clear(); todosLosGeisers.Clear(); modoCombinadoActivo = false; }
+
+    // Devuelve true si posAngel está dentro del radio de transformación de AL MENOS un géiser
+    public static bool AngelEnRangoDeAlgunGeiser(Vector2 posAngel)
+    {
+        foreach (var g in todosLosGeisers)
+            if (g != null && Vector2.Distance(posAngel, g.transform.position) <= g.radioActivacionTransformacion)
+                return true;
+        return false;
+    }
 
     [Header("Referencias (auto-detectadas si no se asignan)")]
     [SerializeField] private ParticleSystem sistemaParticulas;
@@ -30,6 +40,10 @@ public class GeiserControl : MonoBehaviour
     [SerializeField] private float tiempoActivo   = 5f;
     [SerializeField] private float tiempoInactivo = 5f;
     [SerializeField] private float desfase        = 0f;
+
+    [Header("Radio de transformación mantarraya")]
+    [Tooltip("El Angel solo puede transformarse en mantarraya si está dentro de este radio del géiser")]
+    [SerializeField] public float radioActivacionTransformacion = 10f;
 
     [Header("Barrera física (world-space, sin herencia de escala)")]
     [Tooltip("Ancho del canal de agua (ajustar para que coincida con el ancho del WindEffect)")]
@@ -58,6 +72,8 @@ public class GeiserControl : MonoBehaviour
 
     void Awake()
     {
+        todosLosGeisers.Add(this);
+
         // Destruir todos los scripts Geiser.cs viejos en este objeto y sus hijos
         Geiser[] viejos = GetComponentsInChildren<Geiser>(true);
         if (viejos.Length > 0) Debug.Log($"[{gameObject.name}] Destruyendo {viejos.Length} Geiser.cs viejo(s)");
@@ -126,6 +142,7 @@ public class GeiserControl : MonoBehaviour
 
     void OnDestroy()
     {
+        todosLosGeisers.Remove(this);
         if (paredIzquierda != null) todasLasBarreras.Remove(paredIzquierda);
         if (paredDerecha   != null) todasLasBarreras.Remove(paredDerecha);
         if (barreraGO      != null) Destroy(barreraGO);
@@ -651,5 +668,8 @@ public class GeiserControl : MonoBehaviour
         Gizmos.DrawLine(centro + Vector3.right * anchoBarrera / 2f + Vector3.down * alturaBarrera / 2f,
                         centro + Vector3.right * anchoBarrera / 2f + Vector3.up   * alturaBarrera / 2f);
 
+        // Radio de transformación mantarraya (amarillo)
+        Gizmos.color = new Color(1f, 0.9f, 0f, 0.35f);
+        Gizmos.DrawWireSphere(transform.position, radioActivacionTransformacion);
     }
 }
