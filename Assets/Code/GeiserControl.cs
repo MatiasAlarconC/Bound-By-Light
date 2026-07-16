@@ -9,16 +9,41 @@ public class GeiserControl : MonoBehaviour
     public static List<Collider2D>    todasLasBarreras  = new List<Collider2D>();
     public static List<GeiserControl> todosLosGeisers   = new List<GeiserControl>();
     public static bool modoCombinadoActivo = false;
+    public static GeiserControl geiserQueHabilitoTransformacion = null;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void LimpiarBarrerasAlIniciar() { todasLasBarreras.Clear(); todosLosGeisers.Clear(); modoCombinadoActivo = false; }
+    static void LimpiarBarrerasAlIniciar()
+    {
+        todasLasBarreras.Clear();
+        todosLosGeisers.Clear();
+        modoCombinadoActivo = false;
+        geiserQueHabilitoTransformacion = null;
+    }
 
-    // Devuelve true si la posición dada está dentro del radio de transformación de AL MENOS un géiser
+    // Devuelve true si la posición dada está dentro de la zona rectangular de AL MENOS un géiser.
+    // Registra el géiser válido más cercano al centro como el que habilitó la transformación.
     public static bool AngelEnRangoDeAlgunGeiser(Vector2 posAngel)
     {
+        GeiserControl masCercano = null;
+        float menorDist = float.MaxValue;
         foreach (var g in todosLosGeisers)
-            if (g != null && Vector2.Distance(posAngel, g.transform.position) <= g.radioActivacionTransformacion)
-                return true;
+        {
+            if (g == null) continue;
+            float dx = posAngel.x - g.transform.position.x;
+            float dy = posAngel.y - g.transform.position.y;
+            bool dentro = dx >= -g.radioIzquierdo && dx <= g.radioDerecho
+                       && dy >= -g.radioAbajo     && dy <= g.radioArriba;
+            if (dentro)
+            {
+                float d = Vector2.Distance(posAngel, g.transform.position);
+                if (d < menorDist) { menorDist = d; masCercano = g; }
+            }
+        }
+        if (masCercano != null)
+        {
+            geiserQueHabilitoTransformacion = masCercano;
+            return true;
+        }
         return false;
     }
 
@@ -41,11 +66,17 @@ public class GeiserControl : MonoBehaviour
     [SerializeField] private float tiempoInactivo = 5f;
     [SerializeField] private float desfase        = 0f;
 
-    [Header("Radio de transformación mantarraya")]
-    [Tooltip("El Angel solo puede transformarse en mantarraya si está dentro de este radio del géiser")]
-    [SerializeField] public float radioActivacionTransformacion = 10f;
-    [Tooltip("Distancia horizontal máxima desde el géiser antes de forzar la destransformación")]
-    [SerializeField] private float anchoDesactivacion = 20f;
+    [Header("Zona de activación mantarraya (rectángulo)")]
+    [SerializeField] public float radioIzquierdo = 10f;
+    [SerializeField] public float radioDerecho   = 10f;
+    [SerializeField] public float radioArriba    = 10f;
+    [SerializeField] public float radioAbajo     = 10f;
+    [Tooltip("Activar límite horizontal de destransformación para este géiser")]
+    [SerializeField] private bool anchoDesactivacionActivo = true;
+    [Tooltip("Distancia hacia la IZQUIERDA del géiser antes de forzar la destransformación")]
+    [SerializeField] private float limiteIzquierdo = 20f;
+    [Tooltip("Distancia hacia la DERECHA del géiser antes de forzar la destransformación")]
+    [SerializeField] private float limiteDerecho = 20f;
 
     [Header("Barrera física (world-space, sin herencia de escala)")]
     [Tooltip("Ancho del canal de agua (ajustar para que coincida con el ancho del WindEffect)")]
@@ -93,6 +124,16 @@ public class GeiserControl : MonoBehaviour
             goPS.transform.localPosition = Vector3.zero;
             sistemaParticulas = goPS.AddComponent<ParticleSystem>();
             psCreatedByUs = true;
+        }
+
+        // Frenar el PS del artista que puede tener "Play On Awake" activado
+        // ConfigurarParticulasAgua() (en Start) falla si el sistema ya está reproduciendo
+        if (sistemaParticulas != null)
+        {
+            var psMain = sistemaParticulas.main;
+            psMain.playOnAwake = false;
+            sistemaParticulas.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            sistemaParticulas.Clear();
         }
 
         if (areaEffector != null)
@@ -211,11 +252,12 @@ public class GeiserControl : MonoBehaviour
         combinadoEnZona = false;
         soloEnZona      = false;
 
-        // Auto-destransformación por distancia horizontal
-        if (modoCombinadoActivo && angelRef != null && mantarrayaRef != null)
+        // Auto-destransformación: solo el géiser que habilitó la transformación hace el check
+        if (anchoDesactivacionActivo && modoCombinadoActivo && this == geiserQueHabilitoTransformacion
+            && angelRef != null && mantarrayaRef != null)
         {
-            float distH = Mathf.Abs(angelRef.transform.position.x - transform.position.x);
-            if (distH > anchoDesactivacion)
+            float offsetX = angelRef.transform.position.x - transform.position.x;
+            if (offsetX < -limiteIzquierdo || offsetX > limiteDerecho)
                 mantarrayaRef.Desmontar();
         }
 
@@ -373,6 +415,8 @@ public class GeiserControl : MonoBehaviour
         go.transform.localPosition = Vector3.zero;
 
         sistemaParticulasCarga = go.AddComponent<ParticleSystem>();
+        // AddComponent inicia el PS con playOnAwake=true por defecto — detenerlo antes de configurar
+        sistemaParticulasCarga.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
         var main = sistemaParticulasCarga.main;
         main.loop            = true;
@@ -470,6 +514,8 @@ public class GeiserControl : MonoBehaviour
     void ConfigurarParticulasAgua()
     {
         if (sistemaParticulas == null) return;
+        sistemaParticulas.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        sistemaParticulas.Clear();
 
         var main = sistemaParticulas.main;
         main.loop            = true;
@@ -680,16 +726,27 @@ public class GeiserControl : MonoBehaviour
         Gizmos.DrawLine(centro + Vector3.right * anchoBarrera / 2f + Vector3.down * alturaBarrera / 2f,
                         centro + Vector3.right * anchoBarrera / 2f + Vector3.up   * alturaBarrera / 2f);
 
-        // Radio de transformación mantarraya (amarillo)
-        Gizmos.color = new Color(1f, 0.9f, 0f, 0.35f);
-        Gizmos.DrawWireSphere(transform.position, radioActivacionTransformacion);
+        // Zona de activación mantarraya (amarillo - rectángulo)
+        Gizmos.color = new Color(1f, 0.9f, 0f, 0.6f);
+        Vector3 c  = transform.position;
+        Vector3 tl = c + new Vector3(-radioIzquierdo,  radioArriba, 0f);
+        Vector3 tr = c + new Vector3( radioDerecho,    radioArriba, 0f);
+        Vector3 bl = c + new Vector3(-radioIzquierdo, -radioAbajo,  0f);
+        Vector3 br = c + new Vector3( radioDerecho,   -radioAbajo,  0f);
+        Gizmos.DrawLine(tl, tr);
+        Gizmos.DrawLine(tr, br);
+        Gizmos.DrawLine(br, bl);
+        Gizmos.DrawLine(bl, tl);
 
-        // Límite horizontal de desactivación (rojo)
-        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.5f);
-        Vector3 p = transform.position;
-        Gizmos.DrawLine(p + Vector3.left  * anchoDesactivacion + Vector3.up * 5f,
-                        p + Vector3.left  * anchoDesactivacion + Vector3.down * 5f);
-        Gizmos.DrawLine(p + Vector3.right * anchoDesactivacion + Vector3.up * 5f,
-                        p + Vector3.right * anchoDesactivacion + Vector3.down * 5f);
+        // Límite horizontal de desactivación (rojo — solo si está activo)
+        if (anchoDesactivacionActivo)
+        {
+            Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.5f);
+            Vector3 p = transform.position;
+            Gizmos.DrawLine(p - Vector3.right * limiteIzquierdo + Vector3.up * 5f,
+                            p - Vector3.right * limiteIzquierdo + Vector3.down * 5f);
+            Gizmos.DrawLine(p + Vector3.right * limiteDerecho   + Vector3.up * 5f,
+                            p + Vector3.right * limiteDerecho   + Vector3.down * 5f);
+        }
     }
 }

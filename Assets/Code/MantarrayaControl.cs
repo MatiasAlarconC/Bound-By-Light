@@ -78,10 +78,7 @@ public class MantarrayaControl : MonoBehaviour
             if (dist <= distanciaMaxima)
             {
                 if (!GeiserControl.AngelEnRangoDeAlgunGeiser(babosa.transform.position))
-                {
-                    Debug.Log($"[MantarrayaControl] Transformación bloqueada: el jugador no está cerca de ningún géiser. Geisers registrados: {GeiserControl.todosLosGeisers.Count}");
                     return;
-                }
                 Montar();
             }
         }
