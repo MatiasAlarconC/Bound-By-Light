@@ -77,9 +77,9 @@ public class MantarrayaControl : MonoBehaviour
             float dist = Vector2.Distance(transform.position, babosa.transform.position);
             if (dist <= distanciaMaxima)
             {
-                if (!GeiserControl.AngelEnRangoDeAlgunGeiser(transform.position))
+                if (!GeiserControl.AngelEnRangoDeAlgunGeiser(babosa.transform.position))
                 {
-                    Debug.Log("[MantarrayaControl] Transformación bloqueada: el Angel no está cerca de ningún géiser.");
+                    Debug.Log($"[MantarrayaControl] Transformación bloqueada: el jugador no está cerca de ningún géiser. Geisers registrados: {GeiserControl.todosLosGeisers.Count}");
                     return;
                 }
                 Montar();

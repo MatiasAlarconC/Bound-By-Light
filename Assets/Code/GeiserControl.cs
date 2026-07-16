@@ -13,7 +13,7 @@ public class GeiserControl : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void LimpiarBarrerasAlIniciar() { todasLasBarreras.Clear(); todosLosGeisers.Clear(); modoCombinadoActivo = false; }
 
-    // Devuelve true si posAngel está dentro del radio de transformación de AL MENOS un géiser
+    // Devuelve true si la posición dada está dentro del radio de transformación de AL MENOS un géiser
     public static bool AngelEnRangoDeAlgunGeiser(Vector2 posAngel)
     {
         foreach (var g in todosLosGeisers)
