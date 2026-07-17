@@ -84,8 +84,26 @@ public class GameManager : MonoBehaviour
                 puntoDeReaparicion = new Vector3(ex, ey, z);
                 hermanoMenorBabosa.transform.position = puntoDeReaparicion;
                 if (hermanoMayorPulpo != null)
-                    hermanoMayorPulpo.transform.position = puntoDeReaparicion + new Vector3(1.5f, 0f, 0f);
+                {
+                    float px = PlayerPrefs.GetFloat("ExitPosPulpoX", ex + 1.5f);
+                    float py = PlayerPrefs.GetFloat("ExitPosPulpoY", ey);
+                    hermanoMayorPulpo.transform.position = new Vector3(px, py, hermanoMayorPulpo.transform.position.z);
+                }
+                // Reanudar música desde donde se quedó
+                if (PlayerPrefs.HasKey("MusicTimeSamples"))
+                {
+                    GameObject soundsGO = GameObject.Find("Sounds");
+                    if (soundsGO != null)
+                    {
+                        AudioSource musicAudio = soundsGO.GetComponent<AudioSource>();
+                        if (musicAudio != null)
+                            musicAudio.timeSamples = PlayerPrefs.GetInt("MusicTimeSamples");
+                    }
+                    PlayerPrefs.DeleteKey("MusicTimeSamples");
+                }
                 PlayerPrefs.DeleteKey("HasExitPos");
+                PlayerPrefs.DeleteKey("ExitPosPulpoX");
+                PlayerPrefs.DeleteKey("ExitPosPulpoY");
                 PlayerPrefs.Save();
             }
             else if (hasCheckpoint)
@@ -470,6 +488,19 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetFloat("ExitPosX", hermanoMenorBabosa.transform.position.x);
             PlayerPrefs.SetFloat("ExitPosY", hermanoMenorBabosa.transform.position.y);
             PlayerPrefs.SetInt("HasExitPos", 1);
+        }
+        if (hermanoMayorPulpo != null)
+        {
+            PlayerPrefs.SetFloat("ExitPosPulpoX", hermanoMayorPulpo.transform.position.x);
+            PlayerPrefs.SetFloat("ExitPosPulpoY", hermanoMayorPulpo.transform.position.y);
+        }
+        // Guardar posición exacta de la música para reanudarla al volver
+        GameObject soundsGO = GameObject.Find("Sounds");
+        if (soundsGO != null)
+        {
+            AudioSource musicAudio = soundsGO.GetComponent<AudioSource>();
+            if (musicAudio != null && musicAudio.isPlaying)
+                PlayerPrefs.SetInt("MusicTimeSamples", musicAudio.timeSamples);
         }
         PlayerPrefs.Save();
         SceneManager.LoadScene("Main Menu");

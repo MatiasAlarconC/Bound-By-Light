@@ -11,6 +11,10 @@ public class MainMenuController : MonoBehaviour
     [Header("Audio (opcional)")]
     [SerializeField] private AudioSource musicSource;
 
+    [Header("Sonido de botones")]
+    [Tooltip("Arrastra aquí el clip de sonido para los botones del menú")]
+    [SerializeField] private AudioClip sonidoBoton;
+
     [Header("Animación Babosa")]
     [SerializeField] private Sprite[] babosaFrames;
     [SerializeField] private float babosaFps = 12f;
@@ -84,15 +88,21 @@ public class MainMenuController : MonoBehaviour
         _slugEl.style.backgroundImage = new StyleBackground(babosaFrames[_babosaFrame]);
     }
 
+    private void PlayClick()
+    {
+        if (musicSource != null && sonidoBoton != null)
+            musicSource.PlayOneShot(sonidoBoton);
+    }
+
     private void RegisterCallbacks()
     {
-        _btnPlay.clicked     += OnPlay;
-        _btnContinue.clicked += OnContinue;
+        _btnPlay.clicked     += () => { PlayClick(); OnPlay(); };
+        _btnContinue.clicked += () => { PlayClick(); OnContinue(); };
         _btnNewGame.clicked  += OnNewGame;
-        _btnRewind?.RegisterCallback<ClickEvent>(_ => OnRewind());
-        _btnSettings.clicked += OpenSettings;
-        _btnClose.clicked    += CloseSettings;
-        _btnSave.clicked     += SaveSettings;
+        _btnRewind?.RegisterCallback<ClickEvent>(_ => { PlayClick(); OnRewind(); });
+        _btnSettings.clicked += () => { PlayClick(); OpenSettings(); };
+        _btnClose.clicked    += () => { PlayClick(); CloseSettings(); };
+        _btnSave.clicked     += () => { PlayClick(); SaveSettings(); };
 
         _root.Q<VisualElement>("settings-backdrop")
             ?.RegisterCallback<ClickEvent>(_ => CloseSettings());
@@ -146,6 +156,7 @@ public class MainMenuController : MonoBehaviour
 
     private void OnNewGame()
     {
+        PlayClick();
         if (!_pendingNewGameConfirm)
         {
             _pendingNewGameConfirm = true;

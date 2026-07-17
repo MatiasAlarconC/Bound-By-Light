@@ -16,8 +16,18 @@ public class MenuPrincipal : MonoBehaviour
     [Tooltip("Nombre de la escena de configuración")]
     [SerializeField] private string escenaConfiguracion = "Configuracion";
 
+    [Header("Sonido de botones")]
+    [Tooltip("Arrastra aquí el clip de sonido para los botones del menú")]
+    [SerializeField] private AudioClip sonidoBoton;
+
+    private AudioSource fuenteAudio;
+
     void Start()
     {
+        fuenteAudio = GetComponent<AudioSource>();
+        if (fuenteAudio == null)
+            fuenteAudio = gameObject.AddComponent<AudioSource>();
+
         bool haySave       = PlayerPrefs.GetInt("SaveExists", 0) == 1;
         bool hayCheckpoint = PlayerPrefs.HasKey("CheckpointX") && PlayerPrefs.HasKey("CheckpointY");
 
@@ -42,33 +52,39 @@ public class MenuPrincipal : MonoBehaviour
             botonConfiguracion.onClick.AddListener(AbrirConfiguracion);
     }
 
+    void PlayClick()
+    {
+        if (fuenteAudio != null && sonidoBoton != null)
+            fuenteAudio.PlayOneShot(sonidoBoton);
+    }
+
     void Continuar()
     {
+        PlayClick();
         string escena = PlayerPrefs.GetString("LastScene", "Nivel2");
         SceneManager.LoadScene(escena);
     }
 
     void IrAlUltimoCheckpoint()
     {
-        // Borrar la posición de salida para que GameManager use el checkpoint guardado
+        PlayClick();
         PlayerPrefs.DeleteKey("HasExitPos");
         PlayerPrefs.Save();
-
         string escena = PlayerPrefs.GetString("LastScene", "Nivel2");
         SceneManager.LoadScene(escena);
     }
 
     void NuevaPartida()
     {
+        PlayClick();
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
-
-        string primeraEscena = "Nivel2";   // cambiar si hay Nivel1 u otra
-        SceneManager.LoadScene(primeraEscena);
+        SceneManager.LoadScene("Nivel2");
     }
 
     void AbrirConfiguracion()
     {
+        PlayClick();
         SceneManager.LoadScene(escenaConfiguracion);
     }
 }

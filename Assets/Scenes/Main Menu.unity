@@ -242,7 +242,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
   newGameScene: Escena_Cinematica
-  musicSource: {fileID: 0}
+  musicSource: {fileID: 1427508909}
+  sonidoBoton: {fileID: 8300000, guid: d108781d94f16419ab9f9f6a88018a74, type: 3}
   babosaFrames:
   - {fileID: -4209461767521648114, guid: fe8388f8d0b697e4184a88b1be136623, type: 3}
   - {fileID: 6032186475404308979, guid: 4936b835a603a3e4d8ca95a9fb470015, type: 3}
