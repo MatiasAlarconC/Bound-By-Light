@@ -303,18 +303,14 @@ public class GeiserControl : MonoBehaviour
     {
         if (!activo) return;
 
-        // COMBINADO: impulsar Angel
+        // COMBINADO: impulsar Angel — un único impulso al entrar, sin fuerza continua
         if (rbAngel != null)
         {
             bool acabaDeEntrar = combinadoEnZona && !combinadoEnZonaAnterior;
             if (acabaDeEntrar)
             {
-                rbAngel.linearVelocity = new Vector2(rbAngel.linearVelocity.x, 0f);
-                rbAngel.AddForce(Vector2.up * fuerzaImpulso, ForceMode2D.Impulse);
-            }
-            else if (combinadoEnZona)
-            {
-                rbAngel.AddForce(Vector2.up * fuerzaImpulso * 3f, ForceMode2D.Force);
+                // Velocidad directa = fuerzaImpulso * 2 → la gravedad hace el resto
+                rbAngel.linearVelocity = new Vector2(rbAngel.linearVelocity.x, fuerzaImpulso * 2f);
             }
             combinadoEnZonaAnterior = combinadoEnZona;
         }

@@ -40,14 +40,6 @@
 
                 <ui:VisualElement class="slider-row">
                     <ui:VisualElement class="slider-head">
-                        <ui:Label text="volumen master" class="slider-label" />
-                        <ui:Label text="80%" name="val-master" class="slider-value" />
-                    </ui:VisualElement>
-                    <ui:Slider name="slider-master" low-value="0" high-value="100" value="80" class="bbl-slider" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="slider-row">
-                    <ui:VisualElement class="slider-head">
                         <ui:Label text="música" class="slider-label" />
                         <ui:Label text="70%" name="val-music" class="slider-value" />
                     </ui:VisualElement>

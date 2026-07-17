@@ -13,6 +13,9 @@ public class CargadorPorVideo : MonoBehaviour
     [Tooltip("Nombre del archivo de video en StreamingAssets/Cinematics/ (ej: Cinematica1.mp4)")]
     [SerializeField] private string nombreArchivoVideo = "";
 
+    [Tooltip("Marcar si esta es la cinemática final del juego — borra el save y va al Main Menu")]
+    [SerializeField] private bool esFinalDelJuego = false;
+
     void Start()
     {
         miVideoPlayer = GetComponent<VideoPlayer>();
@@ -43,11 +46,21 @@ public class CargadorPorVideo : MonoBehaviour
     private void CargarJuego()
     {
         if (miVideoPlayer != null)
-        {
             miVideoPlayer.loopPointReached -= AlTerminarVideo;
-        }
 
-        // Carga la siguiente escena de forma limpia
-        SceneManager.LoadScene(nombreEscenaGameplay);
+        if (esFinalDelJuego)
+        {
+            PlayerPrefs.DeleteKey("SaveExists");
+            PlayerPrefs.DeleteKey("LastScene");
+            PlayerPrefs.DeleteKey("CheckpointX");
+            PlayerPrefs.DeleteKey("CheckpointY");
+            PlayerPrefs.DeleteKey("HasExitPos");
+            PlayerPrefs.Save();
+            SceneManager.LoadScene("Main Menu");
+        }
+        else
+        {
+            SceneManager.LoadScene(nombreEscenaGameplay);
+        }
     }
 }

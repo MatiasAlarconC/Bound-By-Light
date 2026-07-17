@@ -120,6 +120,9 @@ public class MantarrayaControl : MonoBehaviour
         if (audioSource != null && sonidoTransformacion != null)
             audioSource.PlayOneShot(sonidoTransformacion);
 
+        PulpoColumpio pulpo = FindFirstObjectByType<PulpoColumpio>();
+        if (pulpo != null) { pulpo.SetMaxSaltosEnModo(1); pulpo.SetEsMantarraya(true); }
+
         GameManager gm = Object.FindFirstObjectByType<GameManager>();
         if (gm != null) gm.SetModoCombinado(true);
 
@@ -187,6 +190,9 @@ public class MantarrayaControl : MonoBehaviour
             audioSource.loop = false;
             if (sonidoDestransformacion != null) audioSource.PlayOneShot(sonidoDestransformacion);
         }
+
+        PulpoColumpio pulpo = FindFirstObjectByType<PulpoColumpio>();
+        if (pulpo != null) { pulpo.SetMaxSaltosEnModo(2); pulpo.SetEsMantarraya(false); }
 
         GameManager gm = Object.FindFirstObjectByType<GameManager>();
         if (gm != null) gm.SetModoCombinado(false);

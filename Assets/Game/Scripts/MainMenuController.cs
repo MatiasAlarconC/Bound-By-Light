@@ -26,8 +26,8 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _angelEl;
     private VisualElement _slugEl;
     private Button _btnPlay, _btnContinue, _btnNewGame, _btnSettings, _btnClose, _btnSave, _btnRewind;
-    private Slider _sMaster, _sMusic, _sSfx;
-    private Label _vMaster, _vMusic, _vSfx, _lblSaved;
+    private Slider _sMusic, _sSfx;
+    private Label _vMusic, _vSfx, _lblSaved;
 
     private float _floatTime;
     private bool _pendingNewGameConfirm;
@@ -46,10 +46,8 @@ public class MainMenuController : MonoBehaviour
 
         _settingsOverlay = _root.Q<VisualElement>("settings-overlay");
         _btnClose = _root.Q<Button>("btn-close-settings");
-        _sMaster  = _root.Q<Slider>("slider-master");
         _sMusic   = _root.Q<Slider>("slider-music");
         _sSfx     = _root.Q<Slider>("slider-sfx");
-        _vMaster  = _root.Q<Label>("val-master");
         _vMusic   = _root.Q<Label>("val-music");
         _vSfx     = _root.Q<Label>("val-sfx");
         _angelEl  = _root.Q<VisualElement>("angel");
@@ -99,9 +97,8 @@ public class MainMenuController : MonoBehaviour
         _root.Q<VisualElement>("settings-backdrop")
             ?.RegisterCallback<ClickEvent>(_ => CloseSettings());
 
-        _sMaster.RegisterValueChangedCallback(e => OnVolume(KEY_MASTER, e.newValue, _vMaster));
-        _sMusic.RegisterValueChangedCallback(e  => OnVolume(KEY_MUSIC,  e.newValue, _vMusic));
-        _sSfx.RegisterValueChangedCallback(e    => OnVolume(KEY_SFX,    e.newValue, _vSfx));
+        _sMusic.RegisterValueChangedCallback(e => OnVolume(KEY_MUSIC, e.newValue, _vMusic));
+        _sSfx.RegisterValueChangedCallback(e   => OnVolume(KEY_SFX,   e.newValue, _vSfx));
     }
 
     private void RefreshButtons()
@@ -112,7 +109,7 @@ public class MainMenuController : MonoBehaviour
         SetVisible(_btnPlay,     !hasSave);
         SetVisible(_btnContinue, hasSave);
         SetVisible(_btnNewGame,  hasSave);
-        if (_btnRewind != null) SetVisible(_btnRewind, hasSave && hasCheckpoint);
+        if (_btnRewind != null) SetVisible(_btnRewind, hasSave);
     }
 
     private static void SetVisible(Button btn, bool visible)
@@ -197,26 +194,17 @@ public class MainMenuController : MonoBehaviour
         ApplyVolumes();
     }
 
-    private void ApplyVolumes()
-    {
-        float master = PlayerPrefs.GetFloat(KEY_MASTER, 80f) / 100f;
-        float music  = PlayerPrefs.GetFloat(KEY_MUSIC,  70f) / 100f;
-        AudioListener.volume = master;
-        if (musicSource != null) musicSource.volume = music;
-    }
+    private void ApplyVolumes() => VolumeManager.Apply();
 
     private void LoadSettings()
     {
-        float master = PlayerPrefs.GetFloat(KEY_MASTER, 80f);
-        float music  = PlayerPrefs.GetFloat(KEY_MUSIC,  70f);
-        float sfx    = PlayerPrefs.GetFloat(KEY_SFX,    60f);
+        float music = PlayerPrefs.GetFloat(KEY_MUSIC, 70f);
+        float sfx   = PlayerPrefs.GetFloat(KEY_SFX,   60f);
 
-        _sMaster.SetValueWithoutNotify(master);
         _sMusic.SetValueWithoutNotify(music);
         _sSfx.SetValueWithoutNotify(sfx);
-        _vMaster.text = Mathf.RoundToInt(master) + "%";
-        _vMusic.text  = Mathf.RoundToInt(music)  + "%";
-        _vSfx.text    = Mathf.RoundToInt(sfx)    + "%";
+        _vMusic.text = Mathf.RoundToInt(music) + "%";
+        _vSfx.text   = Mathf.RoundToInt(sfx)   + "%";
 
         ApplyVolumes();
     }

@@ -45,20 +45,27 @@ public class PulpoColumpio : MonoBehaviour
     private float tiempoSiguienteEnganche = 0f;
     private bool estaControlado = false;
     private bool mirandoDerecha = true;
+    private BabosaControl _babosaControl;
 
     private int saltosDisponibles = 1;
     private float _inputCooldown;
     private SpriteRenderer _outlineRenderer;
     private bool estaEnModoCombinado = false;
+    private int _maxSaltosEnModo = 2;
+    private bool _esMantarraya = false;
 
     public Collider2D GetPhysicsCollider() => colliderPulpo;
+
+    public void SetMaxSaltosEnModo(int cantidad) => _maxSaltosEnModo = cantidad;
+    public void SetEsMantarraya(bool valor)      => _esMantarraya = valor;
+
     public void SetModoCombinado(bool combinado)
     {
         estaEnModoCombinado = combinado;
         if (combinado)
         {
             if (pegadoAlTecho) SoltarYAvanzar();
-            saltosDisponibles = 2;   // doble salto al transformarse
+            saltosDisponibles = _maxSaltosEnModo;
         }
     }
 
@@ -79,6 +86,9 @@ public class PulpoColumpio : MonoBehaviour
 
     void Start()
     {
+        var babosaGO = GameObject.FindGameObjectWithTag(tagDeLaBabosa);
+        if (babosaGO != null) _babosaControl = babosaGO.GetComponent<BabosaControl>();
+
         if (lineaVisual != null)
         {
             lineaVisual.enabled = false;
@@ -207,7 +217,7 @@ public class PulpoColumpio : MonoBehaviour
 
         if (EstaEnSuelo() && rbPulpo.linearVelocity.y <= 0.1f)
         {
-            saltosDisponibles = estaEnModoCombinado ? 2 : 1;
+            saltosDisponibles = estaEnModoCombinado ? _maxSaltosEnModo : 1;
         }
 
         float inputH = 0f;
@@ -239,20 +249,30 @@ public class PulpoColumpio : MonoBehaviour
         }
         else
         {
-            rbPulpo.linearVelocity = new Vector2(inputH * velocidadTecho, 0f);
+            bool babosaColgadaAhora = _babosaControl != null && _babosaControl.EstaColgada;
 
-            if (colliderDelCuadradoOculto != null)
+            if (babosaColgadaAhora && colliderDelCuadradoOculto != null)
             {
-                float limiteIzquierdo = colliderDelCuadradoOculto.bounds.min.x;
-                float limiteDerecho = colliderDelCuadradoOculto.bounds.max.x;
-
-                if (transform.position.x < limiteIzquierdo || transform.position.x > limiteDerecho)
-                {
-                    SoltarYAvanzar();
-                }
+                // Bloquear input antes de mover para no crear impulsos en los joints
+                float limIzq = colliderDelCuadradoOculto.bounds.min.x;
+                float limDer = colliderDelCuadradoOculto.bounds.max.x;
+                if (inputH < 0f && transform.position.x <= limIzq) inputH = 0f;
+                if (inputH > 0f && transform.position.x >= limDer) inputH = 0f;
             }
 
-            if (Input.GetButtonDown("Jump")) SoltarYAvanzar();
+            rbPulpo.linearVelocity = new Vector2(inputH * velocidadTecho, 0f);
+
+            if (!babosaColgadaAhora)
+            {
+                if (colliderDelCuadradoOculto != null)
+                {
+                    float limIzq = colliderDelCuadradoOculto.bounds.min.x;
+                    float limDer = colliderDelCuadradoOculto.bounds.max.x;
+                    if (transform.position.x < limIzq || transform.position.x > limDer)
+                        SoltarYAvanzar();
+                }
+                if (Input.GetButtonDown("Jump")) SoltarYAvanzar();
+            }
         }
     }
 
@@ -262,7 +282,8 @@ public class PulpoColumpio : MonoBehaviour
 
         if (spritePulpo != null)
         {
-            spritePulpo.flipX = !mirandoDerecha;
+            // La mantarraya tiene el sprite por defecto mirando a la izquierda → invertir lógica
+            spritePulpo.flipX = _esMantarraya ? mirandoDerecha : !mirandoDerecha;
         }
         else
         {

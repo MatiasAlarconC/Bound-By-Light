@@ -120,6 +120,12 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            IrAlMenuPrincipal();
+            return;
+        }
+
         // Modo combinado: no se permite cambiar de personaje
         if (estaEnModoCombinado) return;
 
@@ -450,5 +456,20 @@ public class GameManager : MonoBehaviour
         tex.SetPixels(pixels);
         tex.Apply();
         return Sprite.Create(tex, new Rect(0, 0, tam, tam), new Vector2(0.5f, 0.5f), tam);
+    }
+
+    void IrAlMenuPrincipal()
+    {
+        Time.timeScale = 1f;
+        PlayerPrefs.SetString("LastScene", SceneManager.GetActiveScene().name);
+        PlayerPrefs.SetInt("SaveExists", 1);
+        if (hermanoMenorBabosa != null)
+        {
+            PlayerPrefs.SetFloat("ExitPosX", hermanoMenorBabosa.transform.position.x);
+            PlayerPrefs.SetFloat("ExitPosY", hermanoMenorBabosa.transform.position.y);
+            PlayerPrefs.SetInt("HasExitPos", 1);
+        }
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("Main Menu");
     }
 }
