@@ -256,6 +256,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetFloat("CheckpointX", nuevaPosicion.x);
             PlayerPrefs.SetFloat("CheckpointY", nuevaPosicion.y);
             PlayerPrefs.Save();
+            Debug.Log($"<color=cyan>CHECKPOINT GUARDADO en X={nuevaPosicion.x:F2}  Y={nuevaPosicion.y:F2}</color>");
 
             if (miLectorDeAudio != null && sonidoCheckpoint != null)
             {
@@ -308,6 +309,7 @@ public class GameManager : MonoBehaviour
 
         if (hermanoMenorBabosa != null)
         {
+            Debug.Log($"<color=magenta>SPAWN BABOSA en X={puntoDeReaparicion.x:F2}  Y={puntoDeReaparicion.y:F2}</color>");
             hermanoMenorBabosa.transform.position = puntoDeReaparicion;
             hermanoMenorBabosa.ResetearEstado();
         }
@@ -458,7 +460,7 @@ public class GameManager : MonoBehaviour
         return Sprite.Create(tex, new Rect(0, 0, tam, tam), new Vector2(0.5f, 0.5f), tam);
     }
 
-    void IrAlMenuPrincipal()
+    public void IrAlMenuPrincipal()
     {
         Time.timeScale = 1f;
         PlayerPrefs.SetString("LastScene", SceneManager.GetActiveScene().name);
