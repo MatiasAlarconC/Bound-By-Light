@@ -346,7 +346,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CargadorPorVideo
   nombreEscenaGameplay: Nivel3
-  nombreArchivoVideo: CREDITOS.mp4
+  nombreArchivoVideo: CREDITOSV2.mp4
   esFinalDelJuego: 1
   volumenVideo: 3.5
   pantallaEspera: {fileID: 963657156}
