@@ -2169,7 +2169,7 @@ Transform:
   m_GameObject: {fileID: 199176159}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 91.3, y: 39.2, z: 0}
+  m_LocalPosition: {x: 91.3, y: 38, z: 0}
   m_LocalScale: {x: 3, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3748,7 +3748,7 @@ Transform:
   m_GameObject: {fileID: 302742616}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 158.5, y: 38.8, z: 0}
+  m_LocalPosition: {x: 158.5, y: 37.7, z: 0}
   m_LocalScale: {x: 3, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5778,7 +5778,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -19031,7 +19031,7 @@ Transform:
   m_GameObject: {fileID: 755528955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 90.6, y: 76.3, z: 0}
+  m_LocalPosition: {x: 90.6, y: 79.65, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -118613,7 +118613,7 @@ Transform:
   m_GameObject: {fileID: 2133043933}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 159.1, y: 75.2, z: 0}
+  m_LocalPosition: {x: 159.1, y: 75.81, z: 0}
   m_LocalScale: {x: 3, y: 2.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
