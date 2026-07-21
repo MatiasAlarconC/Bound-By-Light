@@ -24,6 +24,8 @@ public class CargadorPorVideo : MonoBehaviour
         Camera cam = Camera.main;
         if (cam != null) cam.backgroundColor = Color.black;
 
+        pantallaEspera ??= GameObject.Find("PantallaEspera");
+
         if (pantallaEspera != null) pantallaEspera.SetActive(true);
 
         miVideoPlayer  = GetComponent<VideoPlayer>();

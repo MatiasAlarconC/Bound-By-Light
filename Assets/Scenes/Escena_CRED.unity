@@ -345,9 +345,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01902c3a5baeee6478ea3f71bc0ec2b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CargadorPorVideo
-  nombreEscenaGameplay: Escena_CRED
-  nombreArchivoVideo: Cinematica3.mp4
-  esFinalDelJuego: 0
+  nombreEscenaGameplay: Nivel3
+  nombreArchivoVideo: CREDITOS.mp4
+  esFinalDelJuego: 1
   volumenVideo: 3.5
   pantallaEspera: {fileID: 963657156}
 --- !u!328 &906920053
