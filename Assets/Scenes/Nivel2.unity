@@ -2744,6 +2744,7 @@ GameObject:
   - component: {fileID: 248068974}
   - component: {fileID: 248068975}
   - component: {fileID: 248068976}
+  - component: {fileID: 248068977}
   m_Layer: 0
   m_Name: geiserlvl2_6
   m_TagString: Untagged
@@ -2964,6 +2965,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 875a382c7fc7e7d40b7aeaf65d894d28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!114 &248068977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 248068971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d1c683b9dcf4aefae00b3602b28aa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NarratorHint
+  clip: {fileID: 8300000, guid: b4d38da7da0da458cb365873139668fb, type: 3}
+  audioSourceOverride: {fileID: 0}
+  mode: 1
+  triggerRadius: 20
+  delay: 0
+  uniqueKey: hint_guia_mantarraya
 --- !u!1 &249275995
 GameObject:
   m_ObjectHideFlags: 0

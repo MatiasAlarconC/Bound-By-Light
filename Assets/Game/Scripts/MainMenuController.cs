@@ -139,6 +139,7 @@ public class MainMenuController : MonoBehaviour
 
     private void OnPlay()
     {
+        NarratorHint.NewSession();
         PlayerPrefs.SetInt(KEY_SAVE_EXISTS, 1);
         PlayerPrefs.SetString(KEY_LAST_SCENE, newGameScene);
         PlayerPrefs.DeleteKey("CheckpointX");
@@ -166,6 +167,7 @@ public class MainMenuController : MonoBehaviour
         }
         else
         {
+            NarratorHint.NewSession();
             PlayerPrefs.DeleteKey(KEY_SAVE_EXISTS);
             PlayerPrefs.DeleteKey(KEY_LAST_SCENE);
             PlayerPrefs.DeleteKey("CheckpointX");
